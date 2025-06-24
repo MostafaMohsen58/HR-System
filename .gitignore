@@ -1,0 +1,8 @@
+.vs/
+HRManagementSystem.API/bin/
+HRManagementSystem.API/obj/
+HRManagementSystem.API/appsettings.json
+HRManagementSystem.BL/bin/
+HRManagementSystem.BL/obj/
+HRManagementSystem.DAL/bin/
+HRManagementSystem.DAL/obj/
