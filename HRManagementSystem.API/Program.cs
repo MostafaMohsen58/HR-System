@@ -1,4 +1,8 @@
+using HRManagementSystem.BL.Interfaces;
+using HRManagementSystem.BL.Services;
 using HRManagementSystem.DAL.Data.Context;
+using HRManagementSystem.DAL.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRManagementSystem.API
@@ -17,6 +21,16 @@ namespace HRManagementSystem.API
 
             builder.Services.AddDbContext<HRContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("HRDatabase")));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+            })
+            .AddEntityFrameworkStores<HRContext>();
+
+            builder.Services.AddScoped<IUserService,UserService>();
 
             var app = builder.Build();
 

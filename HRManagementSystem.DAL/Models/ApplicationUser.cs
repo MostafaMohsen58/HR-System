@@ -9,7 +9,6 @@ namespace HRManagementSystem.DAL.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        //public string Address { get; set; }
         public string Address { get; set; }
     }
 }

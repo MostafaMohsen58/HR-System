@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\HRManagementSystem.BL\HRManagementSystem.BL.csproj" />
   </ItemGroup>
 
