@@ -4,6 +4,8 @@ using HRManagementSystem.DAL.Data.Context;
 using HRManagementSystem.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace HRManagementSystem.API
 {
@@ -30,6 +32,20 @@ namespace HRManagementSystem.API
             })
             .AddEntityFrameworkStores<HRContext>();
 
+            builder.Services.AddAuthentication(option => option.DefaultAuthenticateScheme = "mySchema")
+                .AddJwtBearer("mySchema", option =>
+                {
+                    var key = "ylsOukyEWbHPzMPH4eT0fHvD2JWagme2sQWBW+m+P38=";
+                    var secertkey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+
+                    option.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        IssuerSigningKey = secertkey,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+
             builder.Services.AddScoped<IUserService,UserService>();
 
             var app = builder.Build();
@@ -43,8 +59,8 @@ namespace HRManagementSystem.API
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
