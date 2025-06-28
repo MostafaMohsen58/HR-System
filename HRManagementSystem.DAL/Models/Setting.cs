@@ -21,14 +21,14 @@ namespace HRManagementSystem.DAL.Models
 
         [Required]
         [EnumDataType(typeof(WeekDay))]
-        public WeekDay LastHoliday { get; set; } = WeekDay.Saturday;
+        public WeekDay SecondHoliday { get; set; } = WeekDay.Saturday;
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal OverTimePerHour { get; set; }
+        public decimal OverTime { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal DeductionPerAbsentDay { get; set; }
+        public decimal Deduction { get; set; }
     }
 }

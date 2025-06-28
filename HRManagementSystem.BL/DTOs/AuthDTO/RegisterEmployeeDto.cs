@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRManagementSystem.BL.DTOs
+namespace HRManagementSystem.BL.DTOs.AuthDTO
 {
     public class RegisterEmployeeDto
     {

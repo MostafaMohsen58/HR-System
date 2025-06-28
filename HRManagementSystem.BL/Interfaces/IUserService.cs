@@ -1,4 +1,4 @@
-﻿using HRManagementSystem.BL.DTOs;
+﻿using HRManagementSystem.BL.DTOs.AuthDTO;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,6 @@ namespace HRManagementSystem.BL.Interfaces
         Task<AuthDto> LoginUserAsync(LoginDto model);
         Task<IdentityResult> CreateRoleAsync(string roleName);
         Task<IdentityResult> AddRoleToUserAsync(string userId, string roleName);
-        Task<IEnumerable<RoleDto>> GetRolesAsync();
+        IEnumerable<RoleDto> GetRolesAsync();
     }
 }

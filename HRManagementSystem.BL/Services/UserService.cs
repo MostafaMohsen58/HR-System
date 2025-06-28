@@ -1,4 +1,5 @@
-﻿using HRManagementSystem.BL.DTOs;
+﻿using AutoMapper;
+using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Models;
 using Microsoft.AspNetCore.Identity;
@@ -18,30 +19,35 @@ namespace HRManagementSystem.BL.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManger;
+        private readonly IMapper _mapper;
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
+            RoleManager<IdentityRole> roleManager,IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManger = roleManager;
+            _mapper = mapper;
         }
         public async Task<IdentityResult> RegisterUserAsync(RegisterEmployeeDto model, string role)
         {
-            ApplicationUser userInDb = new ApplicationUser()
-            {
-                Email = model.Email,
-                UserName = model.Email.Split('@')[0],
-                Address = model.Address,
-                FullName = model.FullName,
-                NationalId = model.NationalId,
-                Nationality= model.Nationality,
-                Salary= model.Salary,
-                Gender= model.Gender,
-                DateOfBirth = model.DateOfBirth,
-                ContractDate = model.ContractDate,
-                StartTime = model.StartTime,
-                EndTime = model.EndTime
-            };
+            //ApplicationUser userInDb = new ApplicationUser()
+            //{
+            //    Email = model.Email,
+            //    UserName = model.Email.Split('@')[0],
+            //    Address = model.Address,
+            //    FullName = model.FullName,
+            //    NationalId = model.NationalId,
+            //    Nationality= model.Nationality,
+            //    Salary= model.Salary,
+            //    Gender= model.Gender,
+            //    DateOfBirth = model.DateOfBirth,
+            //    ContractDate = model.ContractDate,
+            //    StartTime = model.StartTime,
+            //    EndTime = model.EndTime
+            //};
+
+            ApplicationUser userInDb=_mapper.Map<ApplicationUser>(model);
 
             IdentityResult identityResult = await _userManager.CreateAsync(userInDb, model.Password);
 
@@ -135,7 +141,7 @@ namespace HRManagementSystem.BL.Services
             return IdentityResult.Failed(new IdentityError { Description = "User not found" });
         }
 
-        public async Task<IEnumerable<RoleDto>> GetRolesAsync()
+        public IEnumerable<RoleDto> GetRolesAsync()
         {
             var roles = _roleManger.Roles.Select(r => new RoleDto()
             {

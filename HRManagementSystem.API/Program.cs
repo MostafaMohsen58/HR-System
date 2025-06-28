@@ -1,4 +1,5 @@
 using HRManagementSystem.BL.Interfaces;
+using HRManagementSystem.BL.Mapping;
 using HRManagementSystem.BL.Services;
 using HRManagementSystem.DAL.Data.Context;
 using HRManagementSystem.DAL.Models;
@@ -13,6 +14,7 @@ namespace HRManagementSystem.API
     {
         public static void Main(string[] args)
         {
+            string myPolicy = "";
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -46,7 +48,20 @@ namespace HRManagementSystem.API
                     };
                 });
 
-            builder.Services.AddScoped<IUserService,UserService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddAutoMapper(typeof(mappingConfig));
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("myPolicy",
+                    builder =>
+                    {
+                        //builder.WithOrigins("https://localhost:7053")
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
 
             var app = builder.Build();
 
@@ -61,6 +76,7 @@ namespace HRManagementSystem.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors("myPolicy");
 
             app.MapControllers();
 

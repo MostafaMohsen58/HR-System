@@ -1,4 +1,4 @@
-﻿using HRManagementSystem.BL.DTOs;
+﻿using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,10 +17,10 @@ namespace HRManagementSystem.API.Controllers
             this.userService = userService;
         }
         [Authorize(AuthenticationSchemes = "mySchema")]
-        [HttpGet("get/{id}")]
-        public IActionResult Get(string id)
+        [HttpGet("get")]
+        public IActionResult Get()
         {
-            return Ok("HR Management System API is running.");
+            return Ok("HR Management System API is running well.");
         }
 
 
