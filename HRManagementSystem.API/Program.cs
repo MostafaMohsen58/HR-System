@@ -2,7 +2,9 @@ using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.BL.Mapping;
 using HRManagementSystem.BL.Services;
 using HRManagementSystem.DAL.Data.Context;
+using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -62,6 +64,10 @@ namespace HRManagementSystem.API
                                .AllowAnyHeader();
                     });
             });
+
+
+            builder.Services.AddScoped<IOfficialHolidayRepository, OfficialHolidayRepository>();
+            builder.Services.AddScoped<IOfficialHolidayService, OfficialHolidayService>();
 
             var app = builder.Build();
 
