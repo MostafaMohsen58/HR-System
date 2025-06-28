@@ -1,4 +1,4 @@
-﻿using HRManagementSystem.BL.DTOs;
+﻿using HRManagementSystem.BL.DTOs.AuthDTO;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -10,17 +10,10 @@ namespace HRManagementSystem.BL.Interfaces
 {
     public interface IUserService
     {
-        Task<IdentityResult> RegisterUserAsync(RegisterDto model);
-        Task<SignInResult> LoginUserAsync(LoginDto model);
-        Task SignOutUserAsync();
-        //EditProfileViewModel GetUserById(string userId);
-        //Task<IdentityResult> UpdateUserAsync(EditProfileViewModel model);
-        //Task<IdentityResult> DeleteUserAsync(string userId);
-        //List<EditProfileViewModel> GetAllUsers();
-
-        //UserProfileViewModel GetUserProfileById(string userId);
-        //Task<IdentityResult> UpdateUserProfileAsync(UserProfileViewModel model);
-        //Task<IdentityResult> UpdateUserProfilePersonalInfo(PersonalInformation model);
-        //Task<IdentityResult> UpdateUserProfileAccountInfo(AccountInformation model, string userId);
+        Task<IdentityResult> RegisterUserAsync(RegisterEmployeeDto model, string role);
+        Task<AuthDto> LoginUserAsync(LoginDto model);
+        Task<IdentityResult> CreateRoleAsync(string roleName);
+        Task<IdentityResult> AddRoleToUserAsync(string userId, string roleName);
+        IEnumerable<RoleDto> GetRolesAsync();
     }
 }

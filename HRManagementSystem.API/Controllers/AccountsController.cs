@@ -1,5 +1,6 @@
-﻿using HRManagementSystem.BL.DTOs;
+﻿using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,17 +16,20 @@ namespace HRManagementSystem.API.Controllers
         {
             this.userService = userService;
         }
-        [HttpGet]
+        [Authorize(AuthenticationSchemes = "mySchema")]
+        [HttpGet("get")]
         public IActionResult Get()
         {
-            return Ok("HR Management System API is running.");
+            return Ok("HR Management System API is running well.");
         }
+
+
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto model)
+        public async Task<IActionResult> RegisterEmployee([FromBody] RegisterEmployeeDto model)
         {
             if (ModelState.IsValid)
             {
-                var result = await userService.RegisterUserAsync(model);
+                var result = await userService.RegisterUserAsync(model, "User");
                 if (result.Succeeded)
                 {
                     return Ok("User registered successfully.");
@@ -34,17 +38,19 @@ namespace HRManagementSystem.API.Controllers
             }
             return BadRequest(ModelState);
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             if (ModelState.IsValid)
             {
                 var result = await userService.LoginUserAsync(model);
-                if (result.Succeeded)
+
+                if (result.IsAuthenticated)
                 {
-                    return Ok("User logged in successfully.");
+                    return Ok(result);
                 }
-                return Unauthorized("Invalid login attempt.");
+                return BadRequest(result.Message);
             }
             return BadRequest(ModelState);
         }

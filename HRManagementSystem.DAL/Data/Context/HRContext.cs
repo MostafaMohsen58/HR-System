@@ -15,6 +15,11 @@ namespace HRManagementSystem.DAL.Data.Context
         {
 
         }
+        public DbSet<Department> Department { get; set; }
+        public DbSet<Attendance> Attendance { get; set; }
+        public DbSet<PayRoll> PayRoll { get; set; }
+        public DbSet<OfficialHoliday> OfficialHoliday { get; set; }
+        public DbSet<Setting> Setting { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
