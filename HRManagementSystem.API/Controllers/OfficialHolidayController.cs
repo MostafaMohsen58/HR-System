@@ -1,5 +1,5 @@
-﻿using HRManagementSystem.BL.Interfaces;
-using HRManagementSystem.DAL.Models;
+﻿using HRManagementSystem.BL.DTOs.OfficialHoliday;
+using HRManagementSystem.BL.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +10,14 @@ namespace HRManagementSystem.API.Controllers
     public class OfficialHolidayController : ControllerBase
     {
         private readonly IOfficialHolidayService _officialHolidayService;
+        
         public OfficialHolidayController(IOfficialHolidayService officialHolidayService)
         {
             _officialHolidayService = officialHolidayService;
         }
+        
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] OfficialHoliday officialHoliday)
+        public async Task<IActionResult> Add([FromBody] OfficialHolidayDto officialHoliday)
         {
             if (!ModelState.IsValid)
             {
@@ -31,6 +33,7 @@ namespace HRManagementSystem.API.Controllers
             var officialHolidays = await _officialHolidayService.GetAllOfficialHolidaysAsync();
             return Ok(officialHolidays);
         }
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -46,7 +49,7 @@ namespace HRManagementSystem.API.Controllers
         }
         
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] OfficialHoliday officialHoliday)
+        public async Task<IActionResult> Update([FromBody] OfficialHolidayUpdateDto officialHoliday)
         {
             if (!ModelState.IsValid)
             {
@@ -62,13 +65,14 @@ namespace HRManagementSystem.API.Controllers
                 return NotFound(ex.Message);
             }
         }
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 var deletedId = await _officialHolidayService.DeleteOfficialHolidayAsync(id);
-                return Ok($"Holiday with id: {deletedId} is deleted successsfully");
+                return Ok($"Holiday with id: {deletedId} is deleted successfully");
             }
             catch (KeyNotFoundException ex)
             {

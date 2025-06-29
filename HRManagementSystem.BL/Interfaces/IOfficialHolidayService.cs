@@ -1,4 +1,5 @@
-﻿using HRManagementSystem.DAL.Models;
+﻿using HRManagementSystem.BL.DTOs.OfficialHoliday;
+using HRManagementSystem.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace HRManagementSystem.BL.Interfaces
 {
     public interface IOfficialHolidayService
     {
-        Task<int> AddOfficialHolidayAsync(OfficialHoliday officialHoliday);
-        Task<OfficialHoliday> UpdateOfficialHolidayAsync(OfficialHoliday officialHoliday);
+        Task<int> AddOfficialHolidayAsync(OfficialHolidayDto officialHolidayDto);
+        Task<OfficialHolidayUpdateDto> UpdateOfficialHolidayAsync(OfficialHolidayUpdateDto officialHolidayDto);
         Task<int> DeleteOfficialHolidayAsync(int id);
-        Task<OfficialHoliday> GetOfficialHolidayByIdAsync(int id);
-        Task<IEnumerable<OfficialHoliday>> GetAllOfficialHolidaysAsync();
+        Task<OfficialHolidayUpdateDto> GetOfficialHolidayByIdAsync(int id);
+        Task<IEnumerable<OfficialHolidayUpdateDto>> GetAllOfficialHolidaysAsync();
     }
 }

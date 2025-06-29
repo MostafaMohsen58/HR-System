@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HRManagementSystem.BL.DTOs;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
@@ -14,56 +15,68 @@ namespace HRManagementSystem.BL.Services
     {
         private readonly IOfficialHolidayRepository _officialHolidayRepository;
         private readonly IMapper _mapper;
-        public OfficialHolidayService(IOfficialHolidayRepository officialHolidayService,IMapper mapper)
+        
+        public OfficialHolidayService(IOfficialHolidayRepository officialHolidayRepository, IMapper mapper)
         {
-            _officialHolidayRepository = officialHolidayService;
+            _officialHolidayRepository = officialHolidayRepository;
             _mapper = mapper;
         }
-        public async Task<int> AddOfficialHolidayAsync(OfficialHoliday officialHoliday)
+        
+        public async Task<int> AddOfficialHolidayAsync(OfficialHolidayDto officialHolidayDto)
         {
-            //var officialHolidayEntity = _mapper.Map<OfficialHoliday>(officialHoliday);
+            // Map DTO to entity
+            var officialHoliday = _mapper.Map<OfficialHoliday>(officialHolidayDto);
+            
+            // Call repository
             return await _officialHolidayRepository.AddAsync(officialHoliday);
         }
 
         public async Task<int> DeleteOfficialHolidayAsync(int id)
         {
-            try
-            {
-                return await _officialHolidayRepository.DeleteAsync(id);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return await Task.FromException<int>(ex);
-            }
+            // Get the holiday first to check if it exists
+            var holiday = await _officialHolidayRepository.GetByIdAsync(id);
+            if (holiday == null)
+                throw new KeyNotFoundException($"Official Holiday with Id {id} not found.");
+                
+            // Delete if exists
+            return await _officialHolidayRepository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<OfficialHoliday>> GetAllOfficialHolidaysAsync()
+        public async Task<IEnumerable<OfficialHolidayUpdateDto>> GetAllOfficialHolidaysAsync()
         {
-            return await _officialHolidayRepository.GetAllAsync();
+            // Get all holidays from repository
+            var holidays = await _officialHolidayRepository.GetAllAsync();
+            
+            // Map to DTOs and return
+            return _mapper.Map<IEnumerable<OfficialHolidayUpdateDto>>(holidays);
         }
 
-        public async Task<OfficialHoliday> GetOfficialHolidayByIdAsync(int id)
+        public async Task<OfficialHolidayUpdateDto> GetOfficialHolidayByIdAsync(int id)
         {
-            try
-            {
-                return await _officialHolidayRepository.GetByIdAsync(id);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return await Task.FromException<OfficialHoliday>(ex);
-            }
+            // Get holiday from repository
+            var holiday = await _officialHolidayRepository.GetByIdAsync(id);
+            
+            // Check if holiday exists
+            if (holiday == null)
+                throw new KeyNotFoundException($"Official Holiday with Id {id} not found.");
+                
+            // Map to DTO and return
+            return _mapper.Map<OfficialHolidayUpdateDto>(holiday);
         }
 
-        public async Task<OfficialHoliday> UpdateOfficialHolidayAsync(OfficialHoliday officialHoliday)
+        public async Task<OfficialHolidayUpdateDto> UpdateOfficialHolidayAsync(OfficialHolidayUpdateDto officialHolidayDto)
         {
-            try
-            {
-                return await _officialHolidayRepository.UpdateAsync(officialHoliday);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return await Task.FromException<OfficialHoliday>(ex);
-            }
+            // Map DTO to entity
+            var officialHoliday = _mapper.Map<OfficialHoliday>(officialHolidayDto);
+            
+            // Update entity
+            var updatedHoliday = await _officialHolidayRepository.UpdateAsync(officialHoliday);
+            
+            if (updatedHoliday == null)
+                throw new KeyNotFoundException($"Official Holiday with ID {officialHolidayDto.Id} not found.");
+                
+            // Map back to DTO and return
+            return _mapper.Map<OfficialHolidayUpdateDto>(updatedHoliday);
         }
     }
 }
