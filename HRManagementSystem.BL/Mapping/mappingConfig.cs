@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using HRManagementSystem.BL.DTOs.AuthDTO;
+using HRManagementSystem.BL.DTOs.DepartmentDTO;
+using HRManagementSystem.BL.DTOs.OfficialHoliday;
 using HRManagementSystem.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -17,6 +19,13 @@ namespace HRManagementSystem.BL.Mapping
             {
                 dest.UserName = src.Email.Split('@')[0];
             });
+            CreateMap<DepartmentDto, Department>();
+            CreateMap<Department, DepartmentWithEmployeeCountDto>();
+            CreateMap<DepartmentUpdateDto, Department>().ReverseMap();
+            
+            // Add OfficialHoliday mappings
+            CreateMap<OfficialHolidayDto, OfficialHoliday>();
+            CreateMap<OfficialHolidayUpdateDto, OfficialHoliday>().ReverseMap();
         }
     }
 }
