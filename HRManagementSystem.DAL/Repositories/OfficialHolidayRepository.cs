@@ -48,7 +48,7 @@ namespace HRManagementSystem.DAL.Repositories
         {
             var officialHoliday = await _context.OfficialHoliday.FindAsync(id);
             if (officialHoliday == null)
-                return 0; // Return 0 to indicate no entity was found
+                return 0; 
                 
             _context.OfficialHoliday.Remove(officialHoliday);
             await _context.SaveChangesAsync();

@@ -44,7 +44,7 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { message = ex.Message });
             }
         }
 
@@ -62,7 +62,7 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { message = ex.Message });
             }
         }
 
@@ -72,11 +72,11 @@ namespace HRManagementSystem.API.Controllers
             try
             {
                 var deletedId = await _departmentService.DeleteDepartmentAsync(id);
-                return Ok($"Department with id: {deletedId} is deleted successfully");
+                return Ok(new { message = $"Department with id: {deletedId} is deleted successfully" });
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { message = ex.Message });
             }
         }
     }
