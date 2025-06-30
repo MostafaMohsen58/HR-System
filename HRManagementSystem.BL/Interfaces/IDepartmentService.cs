@@ -1,4 +1,4 @@
-﻿using HRManagementSystem.BL.DTOs;
+﻿using HRManagementSystem.BL.DTOs.DepartmentDTO;
 using HRManagementSystem.DAL.Models;
 using System;
 using System.Collections.Generic;

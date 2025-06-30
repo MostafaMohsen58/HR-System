@@ -30,7 +30,7 @@ namespace HRManagementSystem.DAL.Repositories
         {
             var department = await _context.Department.FindAsync(id);
             if (department == null)
-                return 0; // Return 0 to indicate no entity was found
+                return 0; 
 
             _context.Department.Remove(department);
             await _context.SaveChangesAsync();
@@ -51,15 +51,12 @@ namespace HRManagementSystem.DAL.Repositories
 
         public async Task<Department> UpdateAsync(Department department)
         {
-            // Find the existing entity first
             var existingDepartment = await _context.Department.FindAsync(department.Id);
             if (existingDepartment == null)
                 return null;
-                
-            // Update properties manually
+            
             existingDepartment.Name = department.Name;
             
-            // Save changes
             await _context.SaveChangesAsync();
             return existingDepartment;
         }

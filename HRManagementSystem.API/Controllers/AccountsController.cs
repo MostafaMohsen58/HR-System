@@ -32,7 +32,7 @@ namespace HRManagementSystem.API.Controllers
                 var result = await userService.RegisterUserAsync(model, "User");
                 if (result.Succeeded)
                 {
-                    return Ok("User registered successfully.");
+                    return Ok(new { message = "User registered successfully." });
                 }
                 return BadRequest(result.Errors);
             }
@@ -50,7 +50,7 @@ namespace HRManagementSystem.API.Controllers
                 {
                     return Ok(result);
                 }
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
             }
             return BadRequest(ModelState);
         }
