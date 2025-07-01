@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HRManagementSystem.BL.DTOs.AttendanceDTOs;
 using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.DTOs.DepartmentDTO;
 using HRManagementSystem.BL.DTOs.OfficialHoliday;
@@ -26,6 +27,10 @@ namespace HRManagementSystem.BL.Mapping
             // Add OfficialHoliday mappings
             CreateMap<OfficialHolidayDto, OfficialHoliday>();
             CreateMap<OfficialHolidayUpdateDto, OfficialHoliday>().ReverseMap();
+
+            // Add Attendance mappings
+            CreateMap<AttendanceDto, Attendance>();
+            CreateMap<AttendanceUpdateDto, Attendance>().ReverseMap();
         }
     }
 }
