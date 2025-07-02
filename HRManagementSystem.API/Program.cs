@@ -28,13 +28,14 @@ namespace HRManagementSystem.API
             builder.Services.AddDbContext<HRContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("HRDatabase")));
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, Role>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;
-            })
-            .AddEntityFrameworkStores<HRContext>();
+            }).AddEntityFrameworkStores<HRContext>();
+
+
 
             builder.Services.AddAuthentication(option => option.DefaultAuthenticateScheme = "mySchema")
                 .AddJwtBearer("mySchema", option =>
@@ -51,6 +52,10 @@ namespace HRManagementSystem.API
                 });
 
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IPermissionService, PermissionService>();
+            //builder.Services.AddScoped<IRoleService, RoleService>();
+
+
             builder.Services.AddAutoMapper(typeof(mappingConfig));
 
             builder.Services.AddCors(options =>
@@ -82,9 +87,11 @@ namespace HRManagementSystem.API
 
             app.UseHttpsRedirection();
 
+            app.UseCors("myPolicy");
+
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("myPolicy");
+
 
             app.MapControllers();
 
