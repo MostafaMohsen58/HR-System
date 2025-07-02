@@ -3,6 +3,7 @@ using HRManagementSystem.BL.DTOs.DepartmentDTO;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,12 +65,12 @@ namespace HRManagementSystem.BL.Services
         {
             var department = _mapper.Map<Department>(departmentDto);
 
-            var updatedDepartment = await _departmentRepository.UpdateAsync(department);
+            var updatedsetting = await _departmentRepository.UpdateAsync(department);
 
-            if (updatedDepartment == null)
+            if (updatedsetting == null)
                 throw new KeyNotFoundException($"Department with ID {departmentDto.Id} not found.");
 
-            return _mapper.Map<DepartmentUpdateDto>(updatedDepartment);
+            return _mapper.Map<DepartmentUpdateDto>(updatedsetting);
         }
     }
 }

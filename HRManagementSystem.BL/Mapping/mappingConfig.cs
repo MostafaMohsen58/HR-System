@@ -2,6 +2,7 @@
 using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.DTOs.DepartmentDTO;
 using HRManagementSystem.BL.DTOs.OfficialHoliday;
+using HRManagementSystem.BL.DTOs.SEttingDTO;
 using HRManagementSystem.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,9 @@ namespace HRManagementSystem.BL.Mapping
             // Add OfficialHoliday mappings
             CreateMap<OfficialHolidayDto, OfficialHoliday>();
             CreateMap<OfficialHolidayUpdateDto, OfficialHoliday>().ReverseMap();
+
+            CreateMap<AddSettingDTO, Setting>().ReverseMap();
+            CreateMap<EditSettingDTO, Setting>().ReverseMap();
         }
     }
 }
