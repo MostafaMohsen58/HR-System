@@ -153,18 +153,22 @@ namespace HRManagementSystem.BL.Services
 
             return roles;
         }
-        
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         public async Task<List<UserViewDto>> GetAllUsersAsync()
         {
+            var excludedRoles = new[] { "Hr", "User" };
             var users = _userManager.Users.ToList();
-
             var userList = new List<UserViewDto>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
+
+                // Exclude users who have "HR" or "User" role
+                if (roles.Any(r => excludedRoles.Contains(r)))
+                    continue;
 
                 userList.Add(new UserViewDto
                 {

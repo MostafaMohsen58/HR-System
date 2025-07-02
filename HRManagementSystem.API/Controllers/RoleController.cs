@@ -55,14 +55,15 @@ public class RoleController : ControllerBase
         if (role == null)
             return NotFound("Role not found.");
 
-        var permissionIds = await _permissionService.GetPermissionsByRoleIdAsync(role.Id);
+        var permissions = await _permissionService.GetPermissionsDtoByRoleIdAsync(role.Id);
 
         return Ok(new
         {
             id = role.Id,
             name = role.Name,
-            permissions = permissionIds
+            permissions = permissions
         });
+
     }
 
     [HttpPut("{id}")]
@@ -85,6 +86,7 @@ public class RoleController : ControllerBase
 
         return Ok(new { message = "The group has been updated successfully." });
     }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRole(string id)
     {

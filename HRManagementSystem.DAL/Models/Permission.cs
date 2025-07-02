@@ -12,8 +12,12 @@ namespace HRManagementSystem.DAL.Models
     {
         [Key]
         public int Id { get; set; }
+        public bool IsView { get; set; }
+        public bool IsAdd { get; set; }
+        public bool IsDelete { get; set; }
+        public bool IsEdit { get; set; }
         public string Page { get; set; }
-        public string Action { get; set; }
+
 
         public ICollection<RolePermission> RolePermissions { get; set; }
     }

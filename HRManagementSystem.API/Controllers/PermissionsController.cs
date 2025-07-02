@@ -13,7 +13,7 @@ public class PermissionsController : ControllerBase
     }
 
 
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAllPermissions()
     {
         var permissions = await _permissionService.GetAllPermissionsAsync();
