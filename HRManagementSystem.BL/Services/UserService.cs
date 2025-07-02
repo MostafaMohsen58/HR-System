@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using HRManagementSystem.BL.DTOs.AuthDTO;
+using HRManagementSystem.BL.Helpers;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -18,11 +20,11 @@ namespace HRManagementSystem.BL.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<IdentityRole> _roleManger;
+        private readonly RoleManager<Role> _roleManger;
         private readonly IMapper _mapper;
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
-            RoleManager<IdentityRole> roleManager,IMapper mapper)
+        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+           RoleManager<Role> roleManager, IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -123,11 +125,12 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<IdentityResult> CreateRoleAsync(string roleName)
         {
-            IdentityRole role = new IdentityRole()
+            Role role = new Role()
             {
                 Name = roleName
             };
             IdentityResult identityResult = await _roleManger.CreateAsync(role);
+
             return identityResult;
         }
         public async Task<IdentityResult> AddRoleToUserAsync(string userId, string roleName)
@@ -150,5 +153,113 @@ namespace HRManagementSystem.BL.Services
 
             return roles;
         }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public async Task<List<UserViewDto>> GetAllUsersAsync()
+        {
+            var excludedRoles = new[] { "Hr", "User" };
+            var users = _userManager.Users.ToList();
+            var userList = new List<UserViewDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                // Exclude users who have "HR" or "User" role
+                if (roles.Any(r => excludedRoles.Contains(r)))
+                    continue;
+
+                userList.Add(new UserViewDto
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Roles = roles.ToList()
+                });
+            }
+
+            return userList;
+        }
+        public async Task<UserViewDto?> GetUserByIdAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new UserViewDto
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                UserName = user.UserName,
+                Email = user.Email,
+                Roles = roles.ToList()
+            };
+        }
+        public async Task<IdentityResult> CreateUserAsync(UserDto model)
+        {
+            var user = _mapper.Map<ApplicationUser>(model);
+
+            user.Nationality ??= DefaultUserValues.Nationality;
+            user.NationalId ??= DefaultUserValues.NationalId;
+            user.Address ??= DefaultUserValues.Address;
+            user.Salary = user.Salary == 0 ? DefaultUserValues.Salary : user.Salary;
+            user.DateOfBirth = user.DateOfBirth == default ? DefaultUserValues.DateOfBirth : user.DateOfBirth;
+            user.ContractDate = user.ContractDate == default ? DefaultUserValues.ContractDate : user.ContractDate;
+            user.StartTime = user.StartTime == default ? DefaultUserValues.StartTime : user.StartTime;
+            user.EndTime = user.EndTime == default ? DefaultUserValues.EndTime : user.EndTime;
+            user.DepartmentId ??= DefaultUserValues.DefaultDepartmentId;
+            user.Gender = Gender.Unknown;
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+                return result;
+
+            if (!string.IsNullOrWhiteSpace(model.Role))
+            {
+                await _userManager.AddToRoleAsync(user, model.Role);
+            }
+
+            return result;
+        }
+        public async Task<IdentityResult> UpdateUserAsync(string id, UserDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+
+            if (!string.IsNullOrWhiteSpace(dto.FullName))
+                user.FullName = dto.FullName;
+
+            if (!string.IsNullOrWhiteSpace(dto.UserName))
+                user.UserName = dto.UserName;
+
+            if (!string.IsNullOrWhiteSpace(dto.Email))
+                user.Email = dto.Email;
+
+            if (!string.IsNullOrWhiteSpace(dto.Role))
+            {
+                var oldRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, oldRoles);
+                await _userManager.AddToRoleAsync(user, dto.Role);
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            return result;
+        }
+
+        public async Task<IdentityResult> DeleteUserAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+
+            return await _userManager.DeleteAsync(user);
+        }
+
+
+
     }
 }

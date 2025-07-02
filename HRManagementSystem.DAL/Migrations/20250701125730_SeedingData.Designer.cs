@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(HRContext))]
-    [Migration("20250626154806_AddModels")]
-    partial class AddModels
+    [Migration("20250701125730_SeedingData")]
+    partial class SeedingData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,24 @@ namespace HRManagementSystem.DAL.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("Attendance");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ArrivalTime = new DateTime(2025, 7, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(2025, 7, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
+                            EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ArrivalTime = new DateTime(2025, 7, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 7, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(2025, 7, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
+                        });
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Department", b =>
@@ -178,6 +196,26 @@ namespace HRManagementSystem.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Department");
+                });
+
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.OfficialHoliday", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OfficialHoliday");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.PayRoll", b =>
@@ -229,7 +267,28 @@ namespace HRManagementSystem.DAL.Migrations
                     b.ToTable("PayRoll");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Page")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.Role", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -254,6 +313,60 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.RolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.Setting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Deduction")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("FirstHoliday")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("OverTime")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SecondHoliday")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Setting");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -393,9 +506,28 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.RolePermission", b =>
+                {
+                    b.HasOne("HRManagementSystem.DAL.Models.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HRManagementSystem.DAL.Models.Role", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("HRManagementSystem.DAL.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -422,7 +554,7 @@ namespace HRManagementSystem.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("HRManagementSystem.DAL.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -454,6 +586,16 @@ namespace HRManagementSystem.DAL.Migrations
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Department", b =>
                 {
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("HRManagementSystem.DAL.Models.Role", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 #pragma warning restore 612, 618
         }
