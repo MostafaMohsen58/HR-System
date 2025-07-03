@@ -8,8 +8,8 @@ namespace HRManagementSystem.DAL.Migrations
     public partial class AddRolesSeed : Migration
     {
         /// <inheritdoc />
-        private readonly string _adminRoleId = Guid.NewGuid().ToString();
-        private readonly string _userRoleId = Guid.NewGuid().ToString();
+        public static string adminRoleId = Guid.NewGuid().ToString();
+        public static string userRoleId = Guid.NewGuid().ToString();
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
@@ -17,7 +17,7 @@ namespace HRManagementSystem.DAL.Migrations
             columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
             values: new object[]
             {
-                _adminRoleId,
+                adminRoleId,
                 Guid.NewGuid().ToString(),
                 "Hr",
                 "HR"
@@ -29,7 +29,7 @@ namespace HRManagementSystem.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[]
                 {
-                _userRoleId,
+                userRoleId,
                 Guid.NewGuid().ToString(),
                 "User",
                 "USER"
@@ -44,13 +44,13 @@ namespace HRManagementSystem.DAL.Migrations
             migrationBuilder.DeleteData(
             table: "AspNetRoles",
             keyColumn: "Id",
-            keyValues: new object[] { _adminRoleId }
+            keyValues: new object[] { adminRoleId }
              );
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValues: new object[] { _userRoleId }
+                keyValues: new object[] { userRoleId }
             );
 
         }
