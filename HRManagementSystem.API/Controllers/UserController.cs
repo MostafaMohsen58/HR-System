@@ -36,11 +36,19 @@ namespace HRManagementSystem.API.Controllers
         public async Task<IActionResult> AddUser([FromBody] UserDto model)
         {
             var result = await _userService.CreateUserAsync(model);
+
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            return Ok(new { message = "User created successfully." });
+            var user = await _userService.GetUserByUsernameAsync(model.UserName); 
+
+            return Ok(new
+            {
+                message = "User created successfully.",
+                userId = user.Id  
+            });
         }
+
 
 
         [HttpPut("{id}")]

@@ -5,6 +5,7 @@ using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Models;
 using HRManagementSystem.DAL.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -260,6 +261,10 @@ namespace HRManagementSystem.BL.Services
         }
 
 
+        public async Task<ApplicationUser> GetUserByUsernameAsync(string username)
+        {
+            return await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        }
 
     }
 }
