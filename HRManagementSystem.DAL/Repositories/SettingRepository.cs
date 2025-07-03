@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HRManagementSystem.DAL.Data.Context;
+using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRManagementSystem.DAL.Repositories
 {
-    public class SettingRepository
+    public class SettingRepository:ISettingRepository
     {
         private readonly HRContext _context;
 
