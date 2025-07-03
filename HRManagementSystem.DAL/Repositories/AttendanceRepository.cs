@@ -19,12 +19,9 @@ namespace HRManagementSystem.DAL.Repositories
 
         public async Task<int> DeleteAsync(int id)
         {
-            Attendance attendance = await GetByIdAsync(id);
-            if (attendance == null)
-                return -1;
-            _context.Attendance.Remove(attendance);
-            await _context.SaveChangesAsync();
-            return attendance.Id;
+            var rowsAffected = await _context.Attendance.Where(a => a.Id == id).ExecuteDeleteAsync();
+            
+            return rowsAffected;
         }
 
         public IQueryable<Attendance> GetAllQueryable() => _context.Attendance.Include(a => a.Employee).AsQueryable();

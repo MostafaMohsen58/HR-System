@@ -61,34 +61,6 @@ namespace HRManagementSystem.DAL.Data.Context
                     StartTime = new DateTime(1, 1, 1, 8, 0, 0),
                     EndTime = new DateTime(1, 1, 1, 16, 0, 0),
                     DepartmentId = 2
-                },
-                new ApplicationUser
-                {
-                    Id = "b2d5f001-165f-4c97-9eba-0c8779320d47",
-                    UserName = "user@example.com",
-                    NormalizedUserName = "USER@EXAMPLE.COM",
-                    Email = "user@example.com",
-                    NormalizedEmail = "USER@EXAMPLE.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = "AQAAAAIAAYagAAAAEHy6rJ5zC8pPj3JZx5mZ7XhY9W7vV2lKjXhY7W8z5qKt1vY2bN3cXpLkY9wZ4g==",
-                    SecurityStamp = "SecurityStamp2",
-                    ConcurrencyStamp = "ConcurrencyStamp2",
-                    PhoneNumber = "01087654321",
-                    PhoneNumberConfirmed = true,
-                    TwoFactorEnabled = false,
-                    LockoutEnabled = true,
-                    AccessFailedCount = 0,
-                    FullName = "Regular User",
-                    Nationality = "Egyptian",
-                    Salary = 8000m,
-                    NationalId = "29810000000001",
-                    Gender = Gender.Female,
-                    Address = "456 Side St, Cairo",
-                    DateOfBirth = new DateTime(1995, 5, 5),
-                    ContractDate = new DateTime(2021, 1, 1),
-                    StartTime = new DateTime(1, 1, 1, 9, 0, 0),
-                    EndTime = new DateTime(1, 1, 1, 17, 0, 0),
-                    DepartmentId = 1
                 }
             );
 

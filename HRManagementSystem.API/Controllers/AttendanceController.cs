@@ -25,7 +25,7 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = $"Error retrieving attendances: {ex.Message}" });
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
             }
         }
 
@@ -39,7 +39,7 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = $"Error retrieving paginated attendances: {ex.Message}" });
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
             }
         }
 
@@ -57,7 +57,7 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Error retrieving attendance by ID: {ex.Message}" });
+                return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
             }
         }
 
@@ -74,11 +74,11 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Error adding attendance: {ex.Message}" });
+                return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
             }
         }
 
@@ -95,11 +95,11 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Error updating attendance: {ex.Message}" });
+                return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
             }
         }
 
@@ -113,11 +113,11 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Error deleting attendance: {ex.Message}" });
+                return StatusCode(500, new { error = "An unexpected error occurred." });
             }
         }
     }
