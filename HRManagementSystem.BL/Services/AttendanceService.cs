@@ -36,20 +36,10 @@ namespace HRManagementSystem.BL.Services
             }
         }
 
-        public async Task<int> DeleteAttendanceAsync(int id)
+        public async Task DeleteAttendanceAsync(int id)
         {
-            try
-            {
-                var isDeleted = await _attendanceRepository.DeleteAsync(id);
-                if (isDeleted == 0)
-                    throw new KeyNotFoundException($"Attendance with Id {id} was not found.");
-
-                return isDeleted;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Could not delete attendance with ID {id}.", ex);
-            }
+            if (await _attendanceRepository.DeleteAsync(id) == 0)
+                throw new KeyNotFoundException($"Attendance with Id {id} was not found.");
         }
 
         public async Task<IEnumerable<AttendanceUpdateDto>> GetAllAttendancesAsync()
