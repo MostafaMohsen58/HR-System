@@ -9,5 +9,7 @@ namespace HRManagementSystem.BL.DTOs.AuthDTO
     public class RoleDto
     {
         public string RoleName { get; set; }
+
+        public List<PermissionDto> Permissions { get; set; }
     }
 }
