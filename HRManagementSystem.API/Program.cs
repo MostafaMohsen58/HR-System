@@ -82,6 +82,9 @@ namespace HRManagementSystem.API
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
+            builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+            builder.Services.AddScoped<ISettingService, SettingService>();
+
 
             var app = builder.Build();
 
