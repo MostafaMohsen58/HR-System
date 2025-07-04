@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace HRManagementSystem.BL.DTOs.AuthDTO
 {
@@ -33,8 +34,13 @@ namespace HRManagementSystem.BL.DTOs.AuthDTO
         [StringLength(200)]
         public string Address { get; set; }
 
+       
+        [Required]
         [DataType(DataType.Date)]
+        //[JsonPropertyName("birthDate")]
         public DateTime DateOfBirth { get; set; }
+
+
 
         [DataType(DataType.Date)]
         public DateTime ContractDate { get; set; }
@@ -52,5 +58,9 @@ namespace HRManagementSystem.BL.DTOs.AuthDTO
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        public int? DepartmentId { get; set; } ////
+
+        [StringLength(11)]
+        public string PhoneNumber { get; set; } ////
     }
 }
