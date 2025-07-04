@@ -30,11 +30,11 @@ namespace HRManagementSystem.API.Controllers
         }
 
         [HttpGet("paginated")]
-        public async Task<IActionResult> GetPaginated([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 5)
+        public async Task<IActionResult> GetPaginated([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 5, string? searchTerm = null)
         {
             try
             {
-                var result = await _attendanceService.GetPaginatedAttendancesAsync(pageIndex, pageSize);
+                var result = await _attendanceService.GetPaginatedAttendancesAsync(pageIndex, pageSize, searchTerm);
                 return Ok(result);
             }
             catch (Exception ex)
