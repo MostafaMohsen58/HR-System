@@ -33,13 +33,14 @@ namespace HRManagementSystem.API
             builder.Services.AddDbContext<HRContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("HRDatabase")));
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, Role>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;
-            })
-            .AddEntityFrameworkStores<HRContext>();
+            }).AddEntityFrameworkStores<HRContext>();
+
+
 
             builder.Services.AddAuthentication(option => option.DefaultAuthenticateScheme = "mySchema")
                 .AddJwtBearer("mySchema", option =>
@@ -56,6 +57,9 @@ namespace HRManagementSystem.API
                 });
 
             builder.Services.AddScoped<IUserService, UserService>();
+            //builder.Services.AddScoped<IRoleService, RoleService>();
+
+
             builder.Services.AddAutoMapper(typeof(mappingConfig));
 
             builder.Services.AddCors(options =>
@@ -73,8 +77,16 @@ namespace HRManagementSystem.API
 
             builder.Services.AddScoped<IOfficialHolidayRepository, OfficialHolidayRepository>();
             builder.Services.AddScoped<IOfficialHolidayService, OfficialHolidayService>();
+
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+            builder.Services.AddScoped<IPermissionService, PermissionService>();
+            builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+
+
+            builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
@@ -91,9 +103,11 @@ namespace HRManagementSystem.API
 
             app.UseHttpsRedirection();
 
+            app.UseCors("myPolicy");
+
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("myPolicy");
+
 
             app.MapControllers();
 
