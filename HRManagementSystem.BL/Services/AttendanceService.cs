@@ -22,8 +22,7 @@ namespace HRManagementSystem.BL.Services
             if (attendanceDto == null)
                 throw new ArgumentNullException(nameof(attendanceDto));
 
-            if (attendanceDto.ArrivalTime > attendanceDto.DepartureTime)
-                throw new ArgumentException("Arrival time cannot be after departure time");
+            ValidateAttendanceTimes(attendanceDto.ArrivalTime, attendanceDto.DepartureTime);
 
             try
             {
@@ -55,21 +54,30 @@ namespace HRManagementSystem.BL.Services
             }
         }
 
-        public async Task<PaginatedList<AttendanceUpdateDto>> GetPaginatedAttendancesAsync(int pageIndex = 1, int pageSize = 5)
+        public async Task<PaginatedList<AttendanceUpdateDto>> GetPaginatedAttendancesAsync(int pageIndex = 1, int pageSize = 5, string? searchTerm = null)
         {
             try
             {
                 var attendanceQuery = _attendanceRepository.GetAllQueryable();
 
+                if(!string.IsNullOrEmpty(searchTerm))
+                {
+                    attendanceQuery = attendanceQuery
+                    .Where(a =>
+                        a.Employee.FullName.Contains(searchTerm) ||
+                        a.Date.ToString().Contains(searchTerm)
+                    );
+                }
+
                 var paginatedAttendances = await PaginatedList<Attendance>.CreateAsync(attendanceQuery, pageIndex, pageSize);
 
-                var mappedItems = _mapper.Map<List<AttendanceUpdateDto>>(paginatedAttendances);
+                var mappedItems = _mapper.Map<List<AttendanceUpdateDto>>(paginatedAttendances.Items);
 
                 return new PaginatedList<AttendanceUpdateDto>(
                     mappedItems,
-                    paginatedAttendances.Count,
+                    paginatedAttendances.TotalItems,
                     paginatedAttendances.PageIndex,
-                    pageSize
+                    paginatedAttendances.PageSize
                 );
             }
             catch (Exception ex)
@@ -99,6 +107,8 @@ namespace HRManagementSystem.BL.Services
             try
             {
                 var attendance = _mapper.Map<Attendance>(attendanceUpdateDto);
+                ValidateAttendanceTimes(attendance.ArrivalTime, attendance.DepartureTime);
+
                 var updatedAttendance = await _attendanceRepository.UpdateAsync(attendance);
 
                 if (updatedAttendance == null)
@@ -110,6 +120,12 @@ namespace HRManagementSystem.BL.Services
             {
                 throw new InvalidOperationException($"Could not update attendance with ID {attendanceUpdateDto.Id}.", ex);
             }
+        }
+
+        private void ValidateAttendanceTimes(DateTime arrival, DateTime departure)
+        {
+            if (arrival > departure)
+                throw new ArgumentException("Arrival time cannot be after departure time");
         }
     }
 }
