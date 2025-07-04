@@ -23,8 +23,11 @@ namespace HRManagementSystem.DAL.Models
         public string NationalId { get; set; }
 
         [Column(TypeName = "nvarchar(10)")]
-        [EnumDataType(typeof(Gender))]
+        [EnumDataType(typeof(Gender))] 
         public Gender Gender { get; set; }
+
+
+      
 
         [StringLength(200)]
         public string Address { get; set; }
