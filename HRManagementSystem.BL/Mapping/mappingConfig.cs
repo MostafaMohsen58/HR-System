@@ -16,6 +16,7 @@ using HRManagementSystem.BL.DTOs.EmployeeDTO;
 using HRManagementSystem.BL.DTOs.OfficialHoliday;
 using HRManagementSystem.DAL.Models;
 using HRManagementSystem.DAL.Models.Enums;
+using Microsoft.Data.SqlClient;
 
 namespace HRManagementSystem.BL.Mapping
 {
@@ -70,7 +71,14 @@ namespace HRManagementSystem.BL.Mapping
 
             // Add Attendance mappings
             CreateMap<AttendanceDto, Attendance>();
-            CreateMap<AttendanceUpdateDto, Attendance>().ReverseMap();
+            CreateMap<AttendanceUpdateDto, Attendance>();
+            CreateMap<Attendance, AttendanceUpdateDto>()
+                .ForMember(dest => dest.EmployeeName,
+                            opt => opt.MapFrom(src => src.Employee.FullName))
+                .ForMember(dest => dest.DepartmentName,
+                            opt => opt.MapFrom(src => src.Employee.Department.Name))
+                .ForMember(dest => dest.departmentId,
+                            opt => opt.MapFrom(src => src.Employee.Department.Id));
         }
     }
 }
