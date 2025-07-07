@@ -44,5 +44,14 @@ namespace HRManagementSystem.DAL.Repositories
             _context.Users.Remove(user);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<IEnumerable<ApplicationUser>> GetEmployeesByDepartmentIdAsync(int departmentId)
+        {
+            return await _context.Users
+                .Include(e => e.Department)
+                .Where(e => e.DepartmentId == departmentId)
+                .ToListAsync();
+        }
+
     }
 }

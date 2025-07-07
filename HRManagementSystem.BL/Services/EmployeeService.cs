@@ -67,6 +67,13 @@ namespace HRManagementSystem.BL.Services
 
             return await _employeeRepository.DeleteAsync(employee);
         }
+
+        public async Task<IEnumerable<ViewEmployeeDto>> GetEmployeesByDepartmentIdAsync(int departmentId)
+        {
+            var employees = await _employeeRepository.GetEmployeesByDepartmentIdAsync(departmentId);
+            return _mapper.Map<IEnumerable<ViewEmployeeDto>>(employees);
+        }
+
     }
 
 

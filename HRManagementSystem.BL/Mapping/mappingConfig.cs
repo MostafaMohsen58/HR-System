@@ -1,15 +1,10 @@
-﻿using AutoMapper;
-using HRManagementSystem.BL.DTOs.AttendanceDTOs;
-using HRManagementSystem.BL.DTOs.AuthDTO;
-using HRManagementSystem.BL.DTOs.DepartmentDTO;
-using HRManagementSystem.BL.DTOs.OfficialHoliday;
-using HRManagementSystem.DAL.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using HRManagementSystem.BL.DTOs.AttendanceDTOs;
 using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.DTOs.DepartmentDTO;
 using HRManagementSystem.BL.DTOs.EmployeeDTO;
@@ -57,7 +52,7 @@ namespace HRManagementSystem.BL.Mapping
                           var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<ApplicationUser>();
                           dest.PasswordHash = hasher.HashPassword(dest, src.Password);
                       }
-                  }).ReverseMap();
+                }).ReverseMap();
 
 
             // Add OfficialHoliday mappings

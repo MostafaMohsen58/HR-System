@@ -58,5 +58,13 @@ namespace HRManagementSystem.API.Controllers
 
             return Ok(new { message = "Employee deleted successfully." });
         }
+
+        [HttpGet("department/{departmentId}")]
+        public async Task<IActionResult> GetEmployeesByDepartment(int departmentId)
+        {
+            var employees = await _employeeService.GetEmployeesByDepartmentIdAsync(departmentId);
+            return Ok(employees);
+        }
+
     }
 }
