@@ -26,9 +26,6 @@ namespace HRManagementSystem.DAL.Models
         [EnumDataType(typeof(Gender))] 
         public Gender Gender { get; set; }
 
-
-      
-
         [StringLength(200)]
         public string Address { get; set; }
 
