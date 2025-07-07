@@ -14,5 +14,8 @@ namespace HRManagementSystem.DAL.Interfaces
         Task<ApplicationUser> GetByIdAsync(string id);
         Task<bool> UpdateAsync(ApplicationUser user);
         Task<bool> DeleteAsync(ApplicationUser user);
+
+        Task<IEnumerable<ApplicationUser>> GetEmployeesByDepartmentIdAsync(int departmentId);
+
     }
 }
