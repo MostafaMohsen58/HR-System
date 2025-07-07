@@ -24,9 +24,9 @@ namespace HRManagementSystem.DAL.Repositories
             return rowsAffected;
         }
 
-        public IQueryable<Attendance> GetAllQueryable() => _context.Attendance.Include(a => a.Employee).AsQueryable();
+        public IQueryable<Attendance> GetAllQueryable() => _context.Attendance.Include(a => a.Employee).ThenInclude(e => e.Department).AsQueryable();
         
-        public async Task<Attendance> GetByIdAsync(int id) => await _context.Attendance.Include(a => a.Employee).FirstOrDefaultAsync(a => a.Id == id);
+        public async Task<Attendance> GetByIdAsync(int id) => await _context.Attendance.Include(a => a.Employee).ThenInclude(e => e.Department).FirstOrDefaultAsync(a => a.Id == id);
 
         public async Task<Attendance> UpdateAsync(Attendance attendance)
         {

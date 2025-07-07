@@ -1,6 +1,7 @@
 ﻿using HRManagementSystem.BL.DTOs.AttendanceDTOs;
 using HRManagementSystem.BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace HRManagementSystem.API.Controllers
 {
@@ -30,12 +31,43 @@ namespace HRManagementSystem.API.Controllers
         }
 
         [HttpGet("paginated")]
-        public async Task<IActionResult> GetPaginated([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 5, string? searchTerm = null)
+        public async Task<IActionResult> GetPaginated(
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 5,
+            string? searchTerm = null,
+            DateTime? startDate = null,
+            DateTime? endDate = null)
         {
             try
             {
-                var result = await _attendanceService.GetPaginatedAttendancesAsync(pageIndex, pageSize, searchTerm);
+                var result = await _attendanceService.GetPaginatedAttendancesAsync(pageIndex, pageSize, searchTerm, startDate, endDate);
+                if (result.Items.Count == 0)
+                {
+                    string message;
+
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        message = $"No employee found with name '{searchTerm.Trim()}'";
+
+                        if (startDate.HasValue || endDate.HasValue)
+                        {
+                            message += $" for the date range: {FormatDateRange(startDate, endDate)}";
+                        }
+                    }
+                    else
+                    {
+                        message = $"No records found for date range: {FormatDateRange(startDate, endDate)}";
+                    }
+
+                    return NotFound(new { error = message });
+                }
+
                 return Ok(result);
+
+            }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(new {error = ex.Message });
             }
             catch (Exception ex)
             {
@@ -119,6 +151,23 @@ namespace HRManagementSystem.API.Controllers
             {
                 return StatusCode(500, new { error = "An unexpected error occurred." });
             }
+        }
+
+        private string FormatDateRange(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                return $"{startDate.Value:yyyy-MM-dd} to {endDate.Value:yyyy-MM-dd}";
+            }
+            if (startDate.HasValue)
+            {
+                return $"after {startDate.Value:yyyy-MM-dd}";
+            }
+            if (endDate.HasValue)
+            {
+                return $"before {endDate.Value:yyyy-MM-dd}";
+            }
+            return "all dates";
         }
     }
 }

@@ -1,11 +1,4 @@
-﻿using HRManagementSystem.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HRManagementSystem.BL.DTOs.AttendanceDTOs
 {
@@ -26,5 +19,9 @@ namespace HRManagementSystem.BL.DTOs.AttendanceDTOs
 
         [Required]
         public string EmployeeId { get; set; }
+
+        public string? EmployeeName { get; set; }
+        public string? DepartmentName { get; set; }
+        public int? departmentId { get; set; }
     }
 }
