@@ -75,28 +75,52 @@ namespace HRManagementSystem.BL.Services
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return new List<string>();
 
+            // Get roles
             var roleIds = await _context.UserRoles
                 .Where(ur => ur.UserId == userId)
                 .Select(ur => ur.RoleId)
                 .ToListAsync();
+
+            var roleNames = await _context.Roles
+                .Where(r => roleIds.Contains(r.Id))
+                .Select(r => r.Name)
+                .ToListAsync();
+
+            if (roleNames.Contains("HR"))
+            {
+                var allPermissions = await _context.Permissions.ToListAsync();
+
+                var result = new List<string>();
+
+                foreach (var p in allPermissions)
+                {
+                    if (p.IsView) result.Add($"{p.Page}-View");
+                    if (p.IsAdd) result.Add($"{p.Page}-Add");
+                    if (p.IsEdit) result.Add($"{p.Page}-Edit");
+                    if (p.IsDelete) result.Add($"{p.Page}-Delete");
+                }
+
+                return result.Distinct().ToList();
+            }
 
             var permissions = await (from rp in _context.RolePermissions
                                      join p in _context.Permissions on rp.PermissionId equals p.Id
                                      where roleIds.Contains(rp.RoleId)
                                      select p).ToListAsync();
 
-            var result = new List<string>();
+            var normalResult = new List<string>();
 
             foreach (var p in permissions)
             {
-                if (p.IsView) result.Add($"{p.Page}-View");
-                if (p.IsAdd) result.Add($"{p.Page}-Add");
-                if (p.IsEdit) result.Add($"{p.Page}-Edit");
-                if (p.IsDelete) result.Add($"{p.Page}-Delete");
+                if (p.IsView) normalResult.Add($"{p.Page}-View");
+                if (p.IsAdd) normalResult.Add($"{p.Page}-Add");
+                if (p.IsEdit) normalResult.Add($"{p.Page}-Edit");
+                if (p.IsDelete) normalResult.Add($"{p.Page}-Delete");
             }
 
-            return result.Distinct().ToList();
+            return normalResult.Distinct().ToList();
         }
+
 
         public async Task<List<PermissionDto>> GetAllPermissionsAsync()
         {

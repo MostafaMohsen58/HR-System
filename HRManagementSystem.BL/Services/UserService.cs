@@ -20,18 +20,25 @@ namespace HRManagementSystem.BL.Services
     public class UserService : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IPermissionService _permissionService;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<Role> _roleManger;
         private readonly IMapper _mapper;
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-           RoleManager<Role> roleManager, IMapper mapper)
+        public UserService(
+      UserManager<ApplicationUser> userManager,
+      SignInManager<ApplicationUser> signInManager,
+      RoleManager<Role> roleManager,
+      IPermissionService permissionService,
+      IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManger = roleManager;
+            _permissionService = permissionService;
             _mapper = mapper;
         }
+
         public async Task<IdentityResult> RegisterUserAsync(RegisterEmployeeDto model, string role)
         {
             //ApplicationUser userInDb = new ApplicationUser()
@@ -50,7 +57,7 @@ namespace HRManagementSystem.BL.Services
             //    EndTime = model.EndTime
             //};
 
-            ApplicationUser userInDb=_mapper.Map<ApplicationUser>(model);
+            ApplicationUser userInDb = _mapper.Map<ApplicationUser>(model);
 
             IdentityResult identityResult = await _userManager.CreateAsync(userInDb, model.Password);
 
@@ -62,41 +69,50 @@ namespace HRManagementSystem.BL.Services
             return identityResult;
         }
 
-        
+
 
         public async Task<AuthDto> LoginUserAsync(LoginDto model)
         {
-            ApplicationUser user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            
             if (user != null)
             {
-                //check password
                 bool found = await _userManager.CheckPasswordAsync(user, model.Password);
+
                 if (found)
                 {
-                    //create token instead of cookie
-                    var jwtSecurityToken = await CreateJwtToken(user);
+                    var roles = await _userManager.GetRolesAsync(user);
 
+                    var permissions = await _permissionService.GetUserPermissionsAsync(user.Id);
+
+                    var permissionsJson = System.Text.Json.JsonSerializer.Serialize(permissions);
+
+                    var jwtSecurityToken = await CreateJwtToken(user, permissionsJson);
                     var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
                     return new AuthDto
                     {
                         ExpiresOn = jwtSecurityToken.ValidTo,
                         IsAuthenticated = true,
-                        Roles = new List<string> { "User" },
+                        Roles = roles.ToList(),
+                        Permissions = permissions,
                         Token = token,
                         FulllName = user.FullName,
                         Message = string.Empty
                     };
                 }
             }
+
             return new AuthDto
             {
                 IsAuthenticated = false,
-                Message = "Email or password is Incorrect"
+                Message = "Email or password is incorrect"
             };
         }
 
-        private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
+
+
+        private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user, string permissionsJson)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
@@ -107,9 +123,10 @@ namespace HRManagementSystem.BL.Services
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("Uid",user.Id)
-            }
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim("Uid", user.Id),
+                    new Claim("Permissions", permissionsJson) 
+                }
             .Union(userClaims)
             .Union(roleClaims);
 
@@ -123,6 +140,7 @@ namespace HRManagementSystem.BL.Services
 
             return jwtSecurityToken;
         }
+
 
         public async Task<IdentityResult> CreateRoleAsync(string roleName)
         {
@@ -159,7 +177,7 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<List<UserViewDto>> GetAllUsersAsync()
         {
-            var excludedRoles = new[] { "Hr", "User" };
+            //var excludedRoles = new[] { "Hr", "User" };
             var users = _userManager.Users.ToList();
             var userList = new List<UserViewDto>();
 
@@ -168,8 +186,8 @@ namespace HRManagementSystem.BL.Services
                 var roles = await _userManager.GetRolesAsync(user);
 
                 // Exclude users who have "HR" or "User" role
-                if (roles.Any(r => excludedRoles.Contains(r)))
-                    continue;
+                //if (roles.Any(r => excludedRoles.Contains(r)))
+                //    continue;
 
                 userList.Add(new UserViewDto
                 {
@@ -246,7 +264,11 @@ namespace HRManagementSystem.BL.Services
                 await _userManager.RemoveFromRolesAsync(user, oldRoles);
                 await _userManager.AddToRoleAsync(user, dto.Role);
             }
-
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                await _userManager.RemovePasswordAsync(user);
+                await _userManager.AddPasswordAsync(user, dto.Password);
+            }
             var result = await _userManager.UpdateAsync(user);
             return result;
         }
