@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json.Serialization;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.BL.Mapping;
 using HRManagementSystem.BL.Services;
@@ -8,7 +10,7 @@ using HRManagementSystem.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+
 
 namespace HRManagementSystem.API
 {
@@ -21,7 +23,10 @@ namespace HRManagementSystem.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -82,6 +87,10 @@ namespace HRManagementSystem.API
 
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 
             var app = builder.Build();
