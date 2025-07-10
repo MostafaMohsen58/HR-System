@@ -30,9 +30,11 @@ namespace HRManagementSystem.DAL.Models
         public string Address { get; set; }
 
         [DataType(DataType.Date)]
+        [Column(TypeName = "date")]
         public DateTime DateOfBirth { get; set; }
 
         [DataType(DataType.Date)]
+        [Column(TypeName = "date")]
         public DateTime ContractDate { get; set; }
 
         [DataType(DataType.Time)]

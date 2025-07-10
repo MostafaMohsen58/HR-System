@@ -40,10 +40,10 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ContractDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -173,7 +173,7 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
@@ -192,17 +192,17 @@ namespace HRManagementSystem.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            ArrivalTime = new DateTime(2025, 7, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
                             Date = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(2025, 7, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(1, 1, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
                             EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                         },
                         new
                         {
                             Id = 2,
-                            ArrivalTime = new DateTime(2025, 7, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             Date = new DateTime(2025, 7, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(2025, 7, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(1, 1, 1, 17, 0, 0, 0, DateTimeKind.Unspecified),
                             EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                         });
                 });
@@ -246,7 +246,7 @@ namespace HRManagementSystem.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
