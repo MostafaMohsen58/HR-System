@@ -83,7 +83,7 @@ namespace HRManagementSystem.BL.Services
                         IsAuthenticated = true,
                         Roles = new List<string> { "User" },
                         Token = token,
-                        FulllName = user.FullName,
+                        FullName = user.FullName,
                         Message = string.Empty
                     };
                 }

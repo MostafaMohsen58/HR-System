@@ -13,5 +13,6 @@ namespace HRManagementSystem.BL.Interfaces
         Task<AttendanceUpdateDto> GetAttendanceByIdAsync(int id);
         Task<IEnumerable<AttendanceUpdateDto>> GetAllAttendancesAsync();
         Task<PaginatedList<AttendanceUpdateDto>> GetPaginatedAttendancesAsync(int pageIndex, int pageSize, string? searchTerm, DateTime? startDate, DateTime? endDate);
+        Task<IEnumerable<AttendanceUpdateDto>> GetAllFilteredAsync(string? searchTerm, DateTime? startDate, DateTime? endDate);
     }
 }

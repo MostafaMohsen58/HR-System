@@ -75,6 +75,20 @@ namespace HRManagementSystem.API.Controllers
             }
         }
 
+        [HttpGet("allFiltered")]
+        public async Task<IActionResult> GetAllFiltered([FromQuery] string? searchTerm = null, [FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
+        {
+            try
+            {
+                var result = await _attendanceService.GetAllFilteredAsync(searchTerm, startDate, endDate);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

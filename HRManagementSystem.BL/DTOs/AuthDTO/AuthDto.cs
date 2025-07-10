@@ -13,6 +13,6 @@ namespace HRManagementSystem.BL.DTOs.AuthDTO
         public List<string> Roles { get; set; }
         public string Token { get; set; }
         public DateTime ExpiresOn { get; set; }
-        public string FulllName { get; set; }
+        public string FullName { get; set; }
     }
 }

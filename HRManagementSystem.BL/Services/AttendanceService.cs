@@ -146,11 +146,35 @@ namespace HRManagementSystem.BL.Services
                 throw new InvalidOperationException($"Could not update attendance with ID {attendanceUpdateDto.Id}.", ex);
             }
         }
+        public async Task<IEnumerable<AttendanceUpdateDto>> GetAllFilteredAsync(string? searchTerm, DateTime? startDate, DateTime? endDate)
+        {
+            try
+            {
+                var query = _attendanceRepository.GetAllQueryable();
+
+                if (!string.IsNullOrEmpty(searchTerm))
+                    query = query.Where(a => a.Employee.FullName.Contains(searchTerm));
+
+                if (startDate.HasValue)
+                    query = query.Where(a => a.Date >= startDate.Value);
+
+                if (endDate.HasValue)
+                    query = query.Where(a => a.Date <= endDate.Value);
+
+                var attendances = await query.OrderByDescending(a => a.Date).ToListAsync();
+                return _mapper.Map<IEnumerable<AttendanceUpdateDto>>(attendances);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Could not retrieve filtered attendance records.", ex);
+            }
+        }
 
         private void ValidateAttendanceTimes(DateTime arrival, DateTime departure)
         {
             if (arrival >= departure)
                 throw new ArgumentException("Check-in Time cannot be after Check-out Time");
         }
+
     }
 }
