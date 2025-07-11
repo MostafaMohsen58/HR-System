@@ -17,7 +17,6 @@ namespace HRManagementSystem.API.Controllers
         {
             _settingService = settingService;
         }
-        [HttpGet("get")]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] AddSettingDTO settingDTO)
         {
@@ -26,15 +25,19 @@ namespace HRManagementSystem.API.Controllers
                 return BadRequest(ModelState);
             }
             var createdId = await _settingService.AddSettingAsync(settingDTO);
-            return CreatedAtAction(nameof(GetById), new { id = createdId }, settingDTO);
+            if(createdId > 0)
+            {
+                return BadRequest(new { message = "Failed to create setting." });
+            }
+            return CreatedAtAction(nameof(Get), new { id = createdId }, settingDTO);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var setting = await _settingService.GetSettingByIdAsync(id);
+                var setting = await _settingService.GetSettingByIdAsync(1);
                 return Ok(setting);
             }
             catch (KeyNotFoundException ex)
@@ -43,7 +46,7 @@ namespace HRManagementSystem.API.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("update")]
         public async Task<IActionResult> Update([FromBody] EditSettingDTO setting)
         {
             if (!ModelState.IsValid)

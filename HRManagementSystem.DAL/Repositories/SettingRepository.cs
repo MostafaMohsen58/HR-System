@@ -21,35 +21,21 @@ namespace HRManagementSystem.DAL.Repositories
 
         public async Task<int> AddAsync(Setting setting)
         {
+            var s =await _context.Setting.CountAsync();
+            if (s > 0)  return 0; 
             await _context.Setting.AddAsync(setting);
             await _context.SaveChangesAsync();
             return setting.Id;
         }
 
-        public async Task<int> DeleteAsync(int id)
-        {
-            var setting = await _context.Setting.FindAsync(id);
-            if (setting == null)
-                return 0;
-
-            _context.Setting.Remove(setting);
-            await _context.SaveChangesAsync();
-            return setting.Id;
-        }
-
-        public async Task<IEnumerable<Setting>> GetAllAsync()
-        {
-            return await _context.Setting.ToListAsync();
-        }
-
-        public async Task<Setting> GetByIdAsync(int id)
+        public async Task<Setting> GetByIdAsync(int id=1)
         {
             return await _context.Setting.FindAsync(id);
         }
 
         public async Task<Setting> UpdateAsync(Setting setting)
         {
-            var existingsetting = await _context.Setting.FindAsync(setting.Id);
+            var existingsetting = await _context.Setting.Where(x=>x.Id==1).FirstOrDefaultAsync();
             if (existingsetting == null)
                 return null;
 

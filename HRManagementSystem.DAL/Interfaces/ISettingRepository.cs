@@ -4,11 +4,8 @@ namespace HRManagementSystem.DAL.Interfaces
 {
     public interface ISettingRepository
     {
-        Task<int> AddAsync(Setting department);
-        Task<Setting> GetByIdAsync(int id);
+        Task<int> AddAsync(Setting s);
+        Task<Setting> GetByIdAsync(int id=1);
         Task<Setting> UpdateAsync(Setting setting);
-        Task<int> DeleteAsync(int id);
-        Task<IEnumerable<Setting>> GetAllAsync();
-
     }
 }

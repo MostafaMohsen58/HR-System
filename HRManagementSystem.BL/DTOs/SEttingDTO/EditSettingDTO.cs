@@ -6,8 +6,6 @@ namespace HRManagementSystem.BL.DTOs.SEttingDTO
 {
     public class EditSettingDTO
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         [StringLength(100)]
         public string Type { get; set; } = "default";

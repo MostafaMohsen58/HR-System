@@ -1,7 +1,6 @@
 ﻿using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManagementSystem.API.Controllers
@@ -24,7 +23,7 @@ namespace HRManagementSystem.API.Controllers
         }
 
 
-        [HttpPost("register")]
+        [HttpPut("register")]
         public async Task<IActionResult> RegisterEmployee([FromBody] RegisterEmployeeDto model)
         {
             if (ModelState.IsValid)

@@ -186,7 +186,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Attendance");
+                    b.ToTable("Attendance", (string)null);
 
                     b.HasData(
                         new
@@ -222,7 +222,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Department");
+                    b.ToTable("Department", (string)null);
 
                     b.HasData(
                         new
@@ -254,7 +254,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OfficialHoliday");
+                    b.ToTable("OfficialHoliday", (string)null);
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.PayRoll", b =>
@@ -303,7 +303,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("PayRoll");
+                    b.ToTable("PayRoll", (string)null);
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Permission", b =>
@@ -332,7 +332,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Role", b =>
@@ -383,7 +383,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions");
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Setting", b =>
@@ -413,7 +413,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Setting");
+                    b.ToTable("Setting", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
