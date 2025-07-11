@@ -20,112 +20,72 @@ namespace HRManagementSystem.BL.Services
 
         public async Task AssignPermissionsToRole(string roleId, List<PermissionDto> permissionDtos)
         {
-            // Remove old permissions
-            var existing = await _context.RolePermissions
+            var oldRolePermissions = await _context.RolePermissions
                 .Where(rp => rp.RoleId == roleId)
+                .Include(rp => rp.Permission)
                 .ToListAsync();
 
-            _context.RolePermissions.RemoveRange(existing);
+            _context.Permissions.RemoveRange(oldRolePermissions.Select(rp => rp.Permission));
+            _context.RolePermissions.RemoveRange(oldRolePermissions);
             await _context.SaveChangesAsync();
+
+            var newRolePermissions = new List<RolePermission>();
 
             foreach (var dto in permissionDtos)
             {
-                Permission permission = await _context.Permissions
-                    .FirstOrDefaultAsync(p => p.Page == dto.Page);
-
-                if (permission == null)
+                var permission = new Permission
                 {
-                    permission = new Permission
-                    {
-                        Page = dto.Page,
-                        IsView = dto.IsView,
-                        IsAdd = dto.IsAdd,
-                        IsEdit = dto.IsEdit,
-                        IsDelete = dto.IsDelete
-                    };
-
-                    _context.Permissions.Add(permission);
-                    await _context.SaveChangesAsync();                 }
-                else
-                {
-                    permission.IsView = dto.IsView;
-                    permission.IsAdd = dto.IsAdd;
-                    permission.IsEdit = dto.IsEdit;
-                    permission.IsDelete = dto.IsDelete;
-
-                    _context.Permissions.Update(permission);
-                    await _context.SaveChangesAsync(); 
-                }
-
-                var rolePermission = new RolePermission
-                {
-                    RoleId = roleId,
-                    PermissionId = permission.Id 
+                    Page = dto.Page,
+                    IsView = dto.IsView,
+                    IsAdd = dto.IsAdd,
+                    IsEdit = dto.IsEdit,
+                    IsDelete = dto.IsDelete
                 };
 
-                _context.RolePermissions.Add(rolePermission);
+                _context.Permissions.Add(permission);
+                await _context.SaveChangesAsync();
+
+                newRolePermissions.Add(new RolePermission
+                {
+                    RoleId = roleId,
+                    PermissionId = permission.Id
+                });
             }
 
+            _context.RolePermissions.AddRange(newRolePermissions);
             await _context.SaveChangesAsync();
         }
-
 
         public async Task<List<string>> GetUserPermissionsAsync(string userId)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return new List<string>();
 
-            // Get roles
             var roleIds = await _context.UserRoles
                 .Where(ur => ur.UserId == userId)
                 .Select(ur => ur.RoleId)
                 .ToListAsync();
-
-            var roleNames = await _context.Roles
-                .Where(r => roleIds.Contains(r.Id))
-                .Select(r => r.Name)
-                .ToListAsync();
-
-            if (roleNames.Contains("HR"))
-            {
-                var allPermissions = await _context.Permissions.ToListAsync();
-
-                var result = new List<string>();
-
-                foreach (var p in allPermissions)
-                {
-                    if (p.IsView) result.Add($"{p.Page}-View");
-                    if (p.IsAdd) result.Add($"{p.Page}-Add");
-                    if (p.IsEdit) result.Add($"{p.Page}-Edit");
-                    if (p.IsDelete) result.Add($"{p.Page}-Delete");
-                }
-
-                return result.Distinct().ToList();
-            }
 
             var permissions = await (from rp in _context.RolePermissions
                                      join p in _context.Permissions on rp.PermissionId equals p.Id
                                      where roleIds.Contains(rp.RoleId)
                                      select p).ToListAsync();
 
-            var normalResult = new List<string>();
-
+            var result = new List<string>();
             foreach (var p in permissions)
             {
-                if (p.IsView) normalResult.Add($"{p.Page}-View");
-                if (p.IsAdd) normalResult.Add($"{p.Page}-Add");
-                if (p.IsEdit) normalResult.Add($"{p.Page}-Edit");
-                if (p.IsDelete) normalResult.Add($"{p.Page}-Delete");
+                if (p.IsView) result.Add($"{p.Page}-View");
+                if (p.IsAdd) result.Add($"{p.Page}-Add");
+                if (p.IsEdit) result.Add($"{p.Page}-Edit");
+                if (p.IsDelete) result.Add($"{p.Page}-Delete");
             }
 
-            return normalResult.Distinct().ToList();
+            return result.Distinct().ToList();
         }
-
 
         public async Task<List<PermissionDto>> GetAllPermissionsAsync()
         {
             var permissions = await _permissionRepository.GetAllAsync();
-
             return permissions.Select(p => new PermissionDto
             {
                 Id = p.Id,
@@ -154,6 +114,7 @@ namespace HRManagementSystem.BL.Services
             _context.RolePermissions.RemoveRange(rolePermissions);
             await _context.SaveChangesAsync();
         }
+
         public async Task<List<PermissionDto>> GetPermissionsDtoByRoleIdAsync(string roleId)
         {
             var permissionEntities = await _context.RolePermissions
@@ -162,7 +123,7 @@ namespace HRManagementSystem.BL.Services
                 .Select(rp => rp.Permission)
                 .ToListAsync();
 
-            var result = permissionEntities.Select(p => new PermissionDto
+            return permissionEntities.Select(p => new PermissionDto
             {
                 Id = p.Id,
                 Page = p.Page,
@@ -171,9 +132,6 @@ namespace HRManagementSystem.BL.Services
                 IsEdit = p.IsEdit,
                 IsDelete = p.IsDelete
             }).ToList();
-
-            return result;
         }
-
     }
 }
