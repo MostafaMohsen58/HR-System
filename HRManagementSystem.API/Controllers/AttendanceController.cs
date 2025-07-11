@@ -107,6 +107,13 @@ namespace HRManagementSystem.API.Controllers
             }
         }
 
+        [HttpGet("CheckDuplicate")]
+        public async Task<IActionResult> CheckDuplicate(string employeeId, DateTime date, int? excludeId = null)
+        {
+            var exists = await _attendanceService.CheckDuplicate(employeeId, date, excludeId);
+            return Ok(exists);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] AttendanceDto attendanceDto)
         {
@@ -124,7 +131,7 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
+                return StatusCode(500, new {error = $" {ex.Message}" });
             }
         }
 
@@ -143,9 +150,13 @@ namespace HRManagementSystem.API.Controllers
             {
                 return NotFound(new { ex.Message });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
+                return StatusCode(500, new {error = $"{ex.Message}" });
             }
         }
 
