@@ -4,6 +4,7 @@ using HRManagementSystem.DAL.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(HRContext))]
-    partial class HRContextModelSnapshot : ModelSnapshot
+    [Migration("20250710201550_Edit Column name in payroll")]
+    partial class EditColumnnameinpayroll
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,7 +189,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Attendance", (string)null);
+                    b.ToTable("Attendance");
 
                     b.HasData(
                         new
@@ -222,7 +225,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Department", (string)null);
+                    b.ToTable("Department");
 
                     b.HasData(
                         new
@@ -254,7 +257,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OfficialHoliday", (string)null);
+                    b.ToTable("OfficialHoliday");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.PayRoll", b =>
@@ -281,9 +284,6 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<int>("ExtraHours")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsHolidaySalaryCalculated")
-                        .HasColumnType("bit");
-
                     b.Property<int>("Month")
                         .HasColumnType("int");
 
@@ -306,7 +306,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("PayRoll", (string)null);
+                    b.ToTable("PayRoll");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Permission", b =>
@@ -335,7 +335,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Role", b =>
@@ -386,7 +386,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Setting", b =>
@@ -416,7 +416,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Setting", (string)null);
+                    b.ToTable("Setting");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
