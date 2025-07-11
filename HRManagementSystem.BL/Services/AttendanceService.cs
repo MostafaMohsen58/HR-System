@@ -24,6 +24,10 @@ namespace HRManagementSystem.BL.Services
 
             ValidateAttendanceTimes(attendanceDto.ArrivalTime, attendanceDto.DepartureTime);
 
+            bool isDuplicate = await _attendanceRepository.CheckDuplicate(attendanceDto.EmployeeId, attendanceDto.Date);
+            if (isDuplicate)
+                throw new InvalidOperationException("This employee already has an attendance record for the selected date.");
+
             try
             {
                 var attendance = _mapper.Map<Attendance>(attendanceDto);
@@ -129,22 +133,23 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<AttendanceUpdateDto> UpdateAttendanceAsync(AttendanceUpdateDto attendanceUpdateDto)
         {
-            try
-            {
-                var attendance = _mapper.Map<Attendance>(attendanceUpdateDto);
-                ValidateAttendanceTimes(attendance.ArrivalTime, attendance.DepartureTime);
+            if (attendanceUpdateDto == null)
+                throw new ArgumentNullException(nameof(attendanceUpdateDto));
 
-                var updatedAttendance = await _attendanceRepository.UpdateAsync(attendance);
+            var attendance = _mapper.Map<Attendance>(attendanceUpdateDto);
+            ValidateAttendanceTimes(attendance.ArrivalTime, attendance.DepartureTime);
 
-                if (updatedAttendance == null)
-                    throw new ArgumentNullException(nameof(attendanceUpdateDto));
+            bool isDuplicate = await _attendanceRepository.CheckDuplicate(attendanceUpdateDto.EmployeeId, attendanceUpdateDto.Date, attendanceUpdateDto.Id);
+            if (isDuplicate)
+                throw new InvalidOperationException("This employee already has an attendance record for the selected date.");
 
-                return _mapper.Map<AttendanceUpdateDto>(updatedAttendance);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Could not update attendance with ID {attendanceUpdateDto.Id}.", ex);
-            }
+            var updatedAttendance = await _attendanceRepository.UpdateAsync(attendance);
+
+            if (updatedAttendance == null)
+                throw new ArgumentNullException(nameof(attendanceUpdateDto));
+
+            return _mapper.Map<AttendanceUpdateDto>(updatedAttendance);
+            
         }
         public async Task<IEnumerable<AttendanceUpdateDto>> GetAllFilteredAsync(string? searchTerm, DateTime? startDate, DateTime? endDate)
         {
@@ -168,6 +173,18 @@ namespace HRManagementSystem.BL.Services
             {
                 throw new InvalidOperationException("Could not retrieve filtered attendance records.", ex);
             }
+        }
+        public async Task<bool> CheckDuplicate(string employeeId, DateTime date, int? excludeId = null)
+        {
+            if(excludeId.HasValue)
+            {
+                return await _attendanceRepository.CheckDuplicate(employeeId, date, excludeId.Value);
+            }
+            return await _attendanceRepository.CheckDuplicate(employeeId, date);
+        }
+        public async Task<bool> CheckDuplicate(string employeeId, DateTime date)
+        {
+            return await _attendanceRepository.CheckDuplicate(employeeId, date);
         }
 
         private void ValidateAttendanceTimes(DateTime arrival, DateTime departure)

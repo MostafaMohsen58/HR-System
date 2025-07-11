@@ -16,6 +16,16 @@ namespace HRManagementSystem.DAL.Repositories
             await _context.SaveChangesAsync();
             return attendance.Id;
         }
+        public async Task<bool> CheckDuplicate(string employeeId, DateTime date)
+        {
+            return await _context.Attendance
+                .AnyAsync(a => a.EmployeeId == employeeId && a.Date.Date == date.Date);
+        }
+        public async Task<bool> CheckDuplicate(string employeeId, DateTime date, int excludeId)
+        {
+            return await _context.Attendance
+                .AnyAsync(a => a.EmployeeId == employeeId && a.Date.Date == date.Date && a.Id != excludeId);
+        }
 
         public async Task<int> DeleteAsync(int id)
         {
