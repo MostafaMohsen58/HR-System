@@ -19,15 +19,15 @@ namespace HRManagementSystem.DAL.Models
 
         [Required]
         [Range(0, 31)]
-        public int DaysPresent { get; set; }
+        public int PresentDays { get; set; }
 
         [Required]
         [Range(0, 31)]
         public int AbsentDays { get; set; }
 
         [Required]
-        [Range(0, 31)]
-        public int DeductedDays { get; set; }
+        [Range(0, int.MaxValue)]
+        public int DeductionInHours { get; set; } // don't forget to add migration
 
         [Required]
         [Range(0, int.MaxValue)]
@@ -48,6 +48,9 @@ namespace HRManagementSystem.DAL.Models
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalDeduction { get;set; }
+
+        [Required]
+        public bool IsHolidaySalaryCalculated { get; set; }
 
         //Foreign Key
         [Required]

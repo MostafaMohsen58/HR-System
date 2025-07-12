@@ -4,6 +4,7 @@ using HRManagementSystem.DAL.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(HRContext))]
-    partial class HRContextModelSnapshot : ModelSnapshot
+    [Migration("20250710201550_Edit Column name in payroll")]
+    partial class EditColumnnameinpayroll
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,10 +43,10 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ContractDate")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -173,7 +176,7 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
@@ -186,23 +189,23 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Attendance", (string)null);
+                    b.ToTable("Attendance");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            ArrivalTime = new DateTime(1, 1, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(2025, 7, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
                             Date = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(1, 1, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(2025, 7, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
                             EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                         },
                         new
                         {
                             Id = 2,
-                            ArrivalTime = new DateTime(1, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(2025, 7, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             Date = new DateTime(2025, 7, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(1, 1, 1, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(2025, 7, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
                             EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                         });
                 });
@@ -222,7 +225,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Department", (string)null);
+                    b.ToTable("Department");
 
                     b.HasData(
                         new
@@ -246,7 +249,7 @@ namespace HRManagementSystem.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -254,7 +257,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OfficialHoliday", (string)null);
+                    b.ToTable("OfficialHoliday");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.PayRoll", b =>
@@ -281,9 +284,6 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<int>("ExtraHours")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsHolidaySalaryCalculated")
-                        .HasColumnType("bit");
-
                     b.Property<int>("Month")
                         .HasColumnType("int");
 
@@ -306,7 +306,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("PayRoll", (string)null);
+                    b.ToTable("PayRoll");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Permission", b =>
@@ -335,7 +335,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Role", b =>
@@ -386,7 +386,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Setting", b =>
@@ -416,7 +416,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Setting", (string)null);
+                    b.ToTable("Setting");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
