@@ -24,6 +24,10 @@ namespace HRManagementSystem.BL.Services
 
             ValidateAttendanceTimes(attendanceDto.ArrivalTime, attendanceDto.DepartureTime);
 
+            bool isDuplicate = await _attendanceRepository.CheckDuplicate(attendanceDto.EmployeeId, attendanceDto.Date);
+            if (isDuplicate)
+                throw new InvalidOperationException("This employee already has an attendance record for the selected date.");
+
             try
             {
                 var attendance = _mapper.Map<Attendance>(attendanceDto);
@@ -129,22 +133,58 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<AttendanceUpdateDto> UpdateAttendanceAsync(AttendanceUpdateDto attendanceUpdateDto)
         {
+            if (attendanceUpdateDto == null)
+                throw new ArgumentNullException(nameof(attendanceUpdateDto));
+
+            var attendance = _mapper.Map<Attendance>(attendanceUpdateDto);
+            ValidateAttendanceTimes(attendance.ArrivalTime, attendance.DepartureTime);
+
+            bool isDuplicate = await _attendanceRepository.CheckDuplicate(attendanceUpdateDto.EmployeeId, attendanceUpdateDto.Date, attendanceUpdateDto.Id);
+            if (isDuplicate)
+                throw new InvalidOperationException("This employee already has an attendance record for the selected date.");
+
+            var updatedAttendance = await _attendanceRepository.UpdateAsync(attendance);
+
+            if (updatedAttendance == null)
+                throw new ArgumentNullException(nameof(attendanceUpdateDto));
+
+            return _mapper.Map<AttendanceUpdateDto>(updatedAttendance);
+            
+        }
+        public async Task<IEnumerable<AttendanceUpdateDto>> GetAllFilteredAsync(string? searchTerm, DateTime? startDate, DateTime? endDate)
+        {
             try
             {
-                var attendance = _mapper.Map<Attendance>(attendanceUpdateDto);
-                ValidateAttendanceTimes(attendance.ArrivalTime, attendance.DepartureTime);
+                var query = _attendanceRepository.GetAllQueryable();
 
-                var updatedAttendance = await _attendanceRepository.UpdateAsync(attendance);
+                if (!string.IsNullOrEmpty(searchTerm))
+                    query = query.Where(a => a.Employee.FullName.Contains(searchTerm));
 
-                if (updatedAttendance == null)
-                    throw new ArgumentNullException(nameof(attendanceUpdateDto));
+                if (startDate.HasValue)
+                    query = query.Where(a => a.Date >= startDate.Value);
 
-                return _mapper.Map<AttendanceUpdateDto>(updatedAttendance);
+                if (endDate.HasValue)
+                    query = query.Where(a => a.Date <= endDate.Value);
+
+                var attendances = await query.OrderByDescending(a => a.Date).ToListAsync();
+                return _mapper.Map<IEnumerable<AttendanceUpdateDto>>(attendances);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Could not update attendance with ID {attendanceUpdateDto.Id}.", ex);
+                throw new InvalidOperationException("Could not retrieve filtered attendance records.", ex);
             }
+        }
+        public async Task<bool> CheckDuplicate(string employeeId, DateTime date, int? excludeId = null)
+        {
+            if(excludeId.HasValue)
+            {
+                return await _attendanceRepository.CheckDuplicate(employeeId, date, excludeId.Value);
+            }
+            return await _attendanceRepository.CheckDuplicate(employeeId, date);
+        }
+        public async Task<bool> CheckDuplicate(string employeeId, DateTime date)
+        {
+            return await _attendanceRepository.CheckDuplicate(employeeId, date);
         }
 
         private void ValidateAttendanceTimes(DateTime arrival, DateTime departure)
@@ -152,5 +192,6 @@ namespace HRManagementSystem.BL.Services
             if (arrival >= departure)
                 throw new ArgumentException("Check-in Time cannot be after Check-out Time");
         }
+
     }
 }

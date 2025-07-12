@@ -11,6 +11,7 @@ namespace HRManagementSystem.DAL.Models
 
         [Required]
         [DataType(DataType.Date)]
+        [Column(TypeName = "date")]
         public DateTime Date { get; set; }
 
         [Required]

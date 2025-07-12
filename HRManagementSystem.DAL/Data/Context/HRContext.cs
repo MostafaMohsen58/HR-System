@@ -69,16 +69,16 @@ namespace HRManagementSystem.DAL.Data.Context
                 {
                     Id = 1,
                     Date = new DateTime(2025, 7, 1),
-                    ArrivalTime = new DateTime(2025, 7, 1, 8, 30, 0),
-                    DepartureTime = new DateTime(2025, 7, 1, 16, 30, 0),
+                    ArrivalTime = new DateTime(1, 1, 1, 8, 30, 0),
+                    DepartureTime = new DateTime(1, 1, 1, 16, 30, 0),
                     EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                 },
                 new Attendance
                 {
                     Id = 2,
                     Date = new DateTime(2025, 7, 2),
-                    ArrivalTime = new DateTime(2025, 7, 2, 9, 0, 0),
-                    DepartureTime = new DateTime(2025, 7, 2, 17, 0, 0),
+                    ArrivalTime = new DateTime(1, 1, 1, 9, 0, 0),
+                    DepartureTime = new DateTime(1, 1, 1, 17, 0, 0),
                     EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                 }
             );

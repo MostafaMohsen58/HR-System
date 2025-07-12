@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace HRManagementSystem.DAL.Models
@@ -9,6 +10,7 @@ namespace HRManagementSystem.DAL.Models
         [Required]
         public string Name { get; set; }
 
+        [Column(TypeName = "date")]
         public DateTime Date { get; set; }
     }
 }

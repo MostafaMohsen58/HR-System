@@ -97,7 +97,7 @@ namespace HRManagementSystem.BL.Services
                         Roles = roles.ToList(),
                         Permissions = permissions,
                         Token = token,
-                        FulllName = user.FullName,
+                        FullName = user.FullName,
                         Message = string.Empty
                     };
                 }

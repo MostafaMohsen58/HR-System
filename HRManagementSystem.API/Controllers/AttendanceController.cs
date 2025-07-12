@@ -75,6 +75,20 @@ namespace HRManagementSystem.API.Controllers
             }
         }
 
+        [HttpGet("allFiltered")]
+        public async Task<IActionResult> GetAllFiltered([FromQuery] string? searchTerm = null, [FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
+        {
+            try
+            {
+                var result = await _attendanceService.GetAllFilteredAsync(searchTerm, startDate, endDate);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -91,6 +105,13 @@ namespace HRManagementSystem.API.Controllers
             {
                 return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
             }
+        }
+
+        [HttpGet("CheckDuplicate")]
+        public async Task<IActionResult> CheckDuplicate(string employeeId, DateTime date, int? excludeId = null)
+        {
+            var exists = await _attendanceService.CheckDuplicate(employeeId, date, excludeId);
+            return Ok(exists);
         }
 
         [HttpPost]
@@ -110,7 +131,7 @@ namespace HRManagementSystem.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
+                return StatusCode(500, new {error = $" {ex.Message}" });
             }
         }
 
@@ -129,9 +150,13 @@ namespace HRManagementSystem.API.Controllers
             {
                 return NotFound(new { ex.Message });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new {error = $"Internal server error: {ex.Message}" });
+                return StatusCode(500, new {error = $"{ex.Message}" });
             }
         }
 

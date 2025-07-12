@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(HRContext))]
-    [Migration("20250703154154_SeedUsersAttendanceAndDeptData")]
-    partial class SeedUsersAttendanceAndDeptData
+    [Migration("20250710171831_ConvertDateTimeColumns")]
+    partial class ConvertDateTimeColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,10 +43,10 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ContractDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -161,34 +161,6 @@ namespace HRManagementSystem.DAL.Migrations
                             StartTime = new DateTime(1, 1, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             TwoFactorEnabled = false,
                             UserName = "admin@example.com"
-                        },
-                        new
-                        {
-                            Id = "b2d5f001-165f-4c97-9eba-0c8779320d47",
-                            AccessFailedCount = 0,
-                            Address = "456 Side St, Cairo",
-                            ConcurrencyStamp = "ConcurrencyStamp2",
-                            ContractDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1995, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartmentId = 1,
-                            Email = "user@example.com",
-                            EmailConfirmed = true,
-                            EndTime = new DateTime(1, 1, 1, 17, 0, 0, 0, DateTimeKind.Unspecified),
-                            FullName = "Regular User",
-                            Gender = "Female",
-                            LockoutEnabled = true,
-                            NationalId = "29810000000001",
-                            Nationality = "Egyptian",
-                            NormalizedEmail = "USER@EXAMPLE.COM",
-                            NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHy6rJ5zC8pPj3JZx5mZ7XhY9W7vV2lKjXhY7W8z5qKt1vY2bN3cXpLkY9wZ4g==",
-                            PhoneNumber = "01087654321",
-                            PhoneNumberConfirmed = true,
-                            Salary = 8000m,
-                            SecurityStamp = "SecurityStamp2",
-                            StartTime = new DateTime(1, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            TwoFactorEnabled = false,
-                            UserName = "user@example.com"
                         });
                 });
 
@@ -204,7 +176,7 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
@@ -223,17 +195,17 @@ namespace HRManagementSystem.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            ArrivalTime = new DateTime(2025, 7, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
                             Date = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(2025, 7, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(1, 1, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
                             EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                         },
                         new
                         {
                             Id = 2,
-                            ArrivalTime = new DateTime(2025, 7, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             Date = new DateTime(2025, 7, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(2025, 7, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureTime = new DateTime(1, 1, 1, 17, 0, 0, 0, DateTimeKind.Unspecified),
                             EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
                         });
                 });
@@ -277,7 +249,7 @@ namespace HRManagementSystem.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
