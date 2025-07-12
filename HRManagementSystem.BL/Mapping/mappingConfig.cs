@@ -9,6 +9,7 @@ using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.DTOs.DepartmentDTO;
 using HRManagementSystem.BL.DTOs.EmployeeDTO;
 using HRManagementSystem.BL.DTOs.OfficialHoliday;
+using HRManagementSystem.BL.DTOs.PayRoll;
 using HRManagementSystem.DAL.Models;
 using HRManagementSystem.DAL.Models.Enums;
 using Microsoft.Data.SqlClient;
@@ -74,6 +75,15 @@ namespace HRManagementSystem.BL.Mapping
                             opt => opt.MapFrom(src => src.Employee.Department.Name))
                 .ForMember(dest => dest.departmentId,
                             opt => opt.MapFrom(src => src.Employee.Department.Id));
+
+            // Add PayRollReport mappings
+            CreateMap<PayRoll, PayRollDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.FullName))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Employee.Department.Name))
+                .ForMember(dest => dest.BasicSalary, opt => opt.MapFrom(src => src.Employee.Salary));
+
+            
+
         }
     }
 }

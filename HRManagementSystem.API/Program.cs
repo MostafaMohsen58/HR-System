@@ -1,5 +1,7 @@
+using System;
 using System.Text;
 using System.Text.Json.Serialization;
+using Hangfire;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.BL.Mapping;
 using HRManagementSystem.BL.Services;
@@ -89,8 +91,16 @@ namespace HRManagementSystem.API
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+            builder.Services.AddScoped<IPayRollRepository, PayRollRepository>();
+            builder.Services.AddScoped<IPayRollService, PayRollService>();
+
+            builder.Services.AddHangfire(configuration =>
+            {
+                configuration.UseSqlServerStorage(builder.Configuration.GetConnectionString("HRDatabase"));
+            });
+            builder.Services.AddHangfireServer();
 
 
             var app = builder.Build();
@@ -109,7 +119,24 @@ namespace HRManagementSystem.API
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseHangfireDashboard("/dashborad");
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var jobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
+                var egyptTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+                jobManager.AddOrUpdate<IPayRollService>(
+                    "calculate-payroll",
+                    service => service.FinalizeHolidaySalariesAsync(DateTime.Now.Month, DateTime.Now.Year),
+                    Cron.Daily(23,59),
+                    options: new RecurringJobOptions
+                    {
+                        TimeZone = egyptTimeZone
+                    }
+                );
+            }
             app.MapControllers();
 
             app.Run();
