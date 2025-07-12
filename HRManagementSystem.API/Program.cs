@@ -84,6 +84,7 @@ namespace HRManagementSystem.API
             builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 
 
+
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
