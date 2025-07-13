@@ -1,4 +1,5 @@
 ﻿using HRManagementSystem.BL.DTOs.AuthDTO;
+using HRManagementSystem.BL.DTOs.EmployeeDTO;
 using HRManagementSystem.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -23,7 +24,7 @@ namespace HRManagementSystem.BL.Interfaces
         Task<IdentityResult> UpdateUserAsync(string id, UserDto dto);
         Task<IdentityResult> DeleteUserAsync(string id);
         Task<ApplicationUser> GetUserByUsernameAsync(string username);
-
+        Task<List<ViewEmployeeDto>> GetAllOnlyUsersAsync(IEnumerable<ApplicationUser> users);
 
     }
 }
