@@ -194,5 +194,21 @@ namespace HRManagementSystem.API.Controllers
             }
             return "all dates";
         }
+
+
+        [HttpGet("dashboard/averageDailyAttendance")]
+        public async Task<IActionResult> GetAverageDailyAttendance()
+        {
+            try
+            {
+                var avg = await _attendanceService.GetAverageDailyAttendanceForUsersAsync();
+                return Ok(new { averageDailyAttendance = avg });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
+
     }
 }
