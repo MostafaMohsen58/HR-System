@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using HRManagementSystem.BL.DTOs.EmployeeDTO;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Interfaces;
@@ -74,8 +69,10 @@ namespace HRManagementSystem.BL.Services
             return _mapper.Map<IEnumerable<ViewEmployeeDto>>(employees);
         }
 
+        public async Task<IEnumerable<ViewEmployeeDto>> GetEmployeesByDepartmentNameAsync(string departmentName)
+        {
+            var employees = await _employeeRepository.GetEmployeesByDepartmentNameAsync(departmentName);
+            return _mapper.Map<IEnumerable<ViewEmployeeDto>>(employees);
+        }
     }
-
-
-
 }

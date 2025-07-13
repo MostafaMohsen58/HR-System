@@ -53,5 +53,12 @@ namespace HRManagementSystem.DAL.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetEmployeesByDepartmentNameAsync(string departmentName)
+        {
+                return await _context.Users
+                .Include(e => e.Department)
+                .Where(e => e.Department != null && e.Department.Name == departmentName)
+                .ToListAsync();
+        }
     }
 }

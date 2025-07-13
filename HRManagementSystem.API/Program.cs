@@ -96,6 +96,8 @@ namespace HRManagementSystem.API
             builder.Services.AddScoped<IPayRollRepository, PayRollRepository>();
             builder.Services.AddScoped<IPayRollService, PayRollService>();
 
+            builder.Services.AddScoped<IChatbotService, ChatbotService>();
+
             builder.Services.AddHangfire(configuration =>
             {
                 configuration.UseSqlServerStorage(builder.Configuration.GetConnectionString("HRDatabase"));
