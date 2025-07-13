@@ -42,7 +42,6 @@ namespace HRManagementSystem.BL.Services
 
             if (existingPayRoll == null)
             {
-                
                 //create a new payroll entry
                 var payRoll = CalculateNetSalary(employee, month, year, checkIn, checkOut,21,1);
                 
@@ -50,11 +49,16 @@ namespace HRManagementSystem.BL.Services
             }
             else 
             {
-                //update the existing payroll entry
-                var payRoll = CalculateNetSalary(employee, month,year,checkIn,checkOut, --existingPayRoll.AbsentDays, ++existingPayRoll.PresentDays);
+                if (existingPayRoll.AbsentDays == 0)
+                    existingPayRoll.AbsentDays = 0;
+                else
+                    --existingPayRoll.AbsentDays;
 
-                existingPayRoll.AbsentDays = payRoll.AbsentDays; // should delete it not need for these 2 lines because it's already updated
-                existingPayRoll.PresentDays = payRoll.PresentDays;
+                ++existingPayRoll.PresentDays;
+                //update the existing payroll entry
+                var payRoll = CalculateNetSalary(employee, month,year,checkIn,checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+
+                
                 existingPayRoll.NetSalary += payRoll.NetSalary;
                 existingPayRoll.TotalAddition += payRoll.TotalAddition;
                 existingPayRoll.TotalDeduction += payRoll.TotalDeduction;
@@ -66,6 +70,65 @@ namespace HRManagementSystem.BL.Services
 
         }
 
+        public async Task<int> UpdatePayRoll(int oldMonth, int oldYear, int month , int year, string employeeId, DateTime oldCheckIn, DateTime oldCheckOut,DateTime checkIn,DateTime checkOut)
+        {
+            if(oldCheckIn != checkIn || oldCheckOut != checkOut)
+            {
+                var existingPayRoll = await _payRollRepository.GetByMonthAndYearAsync(oldMonth, oldYear, employeeId);
+
+                if (existingPayRoll == null)
+                    throw new KeyNotFoundException($"PayRoll for month {month} and year {year} for employee {employeeId} not found.");
+
+                var employee = await _employeeRepository.GetByIdAsync(employeeId);
+
+                if (employee == null)
+                    throw new KeyNotFoundException($"Employee with ID {employeeId} not found.");
+
+                if (oldMonth == month && oldYear == year)
+                {
+                    
+                    var oldSalarypayRoll = CalculateNetSalary(employee, oldMonth, oldYear, oldCheckIn, oldCheckOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+                    var newSalaryPayRoll = CalculateNetSalary(employee, month, year, checkIn, checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+
+                    
+                    existingPayRoll.NetSalary -= oldSalarypayRoll.NetSalary; // remove the old salary
+                    existingPayRoll.NetSalary += newSalaryPayRoll.NetSalary; // add the new salary
+
+                    existingPayRoll.TotalAddition -= oldSalarypayRoll.TotalAddition;
+                    existingPayRoll.TotalAddition += newSalaryPayRoll.TotalAddition;
+
+                    existingPayRoll.TotalDeduction -= oldSalarypayRoll.TotalDeduction;
+                    existingPayRoll.TotalDeduction += newSalaryPayRoll.TotalDeduction;
+
+                    existingPayRoll.DeductionInHours -= oldSalarypayRoll.DeductionInHours;
+                    existingPayRoll.DeductionInHours += newSalaryPayRoll.DeductionInHours;
+
+                    existingPayRoll.ExtraHours -= oldSalarypayRoll.ExtraHours;
+                    existingPayRoll.ExtraHours += newSalaryPayRoll.ExtraHours;
+
+                    return await _payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+                }
+                else //case of update record in previous month
+                {
+                    var oldSalarypayRoll = CalculateNetSalary(employee, oldMonth, oldYear, oldCheckIn, oldCheckOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+                    
+                    existingPayRoll.AbsentDays++;
+                    existingPayRoll.PresentDays--;
+                    existingPayRoll.NetSalary -= oldSalarypayRoll.NetSalary; 
+                    existingPayRoll.TotalAddition -= oldSalarypayRoll.TotalAddition;
+                    existingPayRoll.TotalDeduction -= oldSalarypayRoll.TotalDeduction;
+                    existingPayRoll.DeductionInHours -= oldSalarypayRoll.DeductionInHours;
+                    existingPayRoll.ExtraHours -= oldSalarypayRoll.ExtraHours;
+
+                   await _payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+
+
+                    //create a new payroll entry for the new month
+                    await AddPayRollAsync(month, year, employeeId, checkIn, checkOut).ContinueWith(t => t.Result);
+                }
+            }
+            return 0;
+        }
 
         public async Task<List<PayRoll>> GetAllPayRollsAsync()
         {
@@ -85,10 +148,18 @@ namespace HRManagementSystem.BL.Services
                 throw new KeyNotFoundException($"Employee with ID {employeeId} not found.");
             }
 
-            var payRoll = CalculateNetSalary(employee, month, year, checkIn, checkOut, ++existingPayRoll.AbsentDays, --existingPayRoll.PresentDays);
+            ++existingPayRoll.AbsentDays;
+            --existingPayRoll.PresentDays;
 
-            existingPayRoll.AbsentDays = payRoll.AbsentDays; 
-            existingPayRoll.PresentDays = payRoll.PresentDays;
+            if (existingPayRoll.AbsentDays == 22)
+            {
+                await _payRollRepository.DeleteAsync(existingPayRoll.Id);
+                return existingPayRoll.Id;
+            }
+
+            var payRoll = CalculateNetSalary(employee, month, year, checkIn, checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+
+            
             existingPayRoll.NetSalary -= payRoll.NetSalary;
             existingPayRoll.TotalAddition -= payRoll.TotalAddition;
             existingPayRoll.TotalDeduction -= payRoll.TotalDeduction;
