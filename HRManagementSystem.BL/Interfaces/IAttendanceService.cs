@@ -16,5 +16,8 @@ namespace HRManagementSystem.BL.Interfaces
         Task<IEnumerable<AttendanceUpdateDto>> GetAllFilteredAsync(string? searchTerm, DateTime? startDate, DateTime? endDate);
         Task<bool> CheckDuplicate(string employeeId, DateTime date);
         Task<bool> CheckDuplicate(string employeeId, DateTime date, int? excludeId);
+        Task<double> GetAverageDailyAttendanceForUsersAsync();
+
+
     }
 }

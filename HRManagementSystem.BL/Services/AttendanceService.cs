@@ -193,5 +193,11 @@ namespace HRManagementSystem.BL.Services
                 throw new ArgumentException("Check-in Time cannot be after Check-out Time");
         }
 
+        public async Task<double> GetAverageDailyAttendanceForUsersAsync()
+        {
+            return await _attendanceRepository.GetAverageDailyAttendanceForUsersAsync();
+        }
+
+
     }
 }
