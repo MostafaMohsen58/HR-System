@@ -186,32 +186,32 @@ namespace HRManagementSystem.BL.Services
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-       public async Task<List<UserViewDto>> GetAllUsersAsync()
-       {
-           var excludedRoles = new[] { "Hr", "User" };
+        public async Task<List<UserViewDto>> GetAllUsersAsync()
+        {
+            var excludedRoles = new[] { "Hr", "User" };
 
-           var users = _userManager.Users.ToList();
-           var userList = new List<UserViewDto>();
+            var users = _userManager.Users.ToList();
+            var userList = new List<UserViewDto>();
 
-           foreach (var user in users)
-           {
-               //Exclude users who have "HR" or "User" role
-               var roles = await _userManager.GetRolesAsync(user);
+            foreach (var user in users)
+            {
+                //Exclude users who have "HR" or "User" role
+                var roles = await _userManager.GetRolesAsync(user);
 
-               if (roles.Any(r => excludedRoles.Contains(r)))
-                   continue;
-               userList.Add(new UserViewDto
-               {
-                   Id = user.Id,
-                   FullName = user.FullName,
-                   UserName = user.UserName,
-                   Email = user.Email,
-                   Roles = roles.ToList()
-               });
-           }
+                if (roles.Any(r => excludedRoles.Contains(r)))
+                    continue;
+                userList.Add(new UserViewDto
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Roles = roles.ToList()
+                });
+            }
 
-           return userList;
-       }
+            return userList;
+        }
         public async Task<List<ViewEmployeeDto>> GetAllOnlyUsersAsync(IEnumerable<ApplicationUser> users)
         {
             var targetRole = "User";
@@ -231,7 +231,6 @@ namespace HRManagementSystem.BL.Services
 
             return userList;
         }
-
 
 
         public async Task<UserViewDto?> GetUserByIdAsync(string id)
