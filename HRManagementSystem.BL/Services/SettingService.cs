@@ -38,14 +38,14 @@ namespace HRManagementSystem.BL.Services
         }
         public async Task<EditSettingDto> UpdateSettingAsync(EditSettingDto Setting)
         {
-            var department = _mapper.Map<Setting>(Setting);
+            var setting = _mapper.Map<Setting>(Setting);
 
-            var updatedDepartment = await _settingRepository.UpdateAsync(department);
+            var updatedSetting = await _settingRepository.UpdateAsync(setting);
 
-            if (updatedDepartment == null)
+            if (updatedSetting == null)
                 throw new KeyNotFoundException($" ID  not found.");
 
-            return _mapper.Map<EditSettingDto>(updatedDepartment);
+            return _mapper.Map<EditSettingDto>(updatedSetting);
         }
     }
 }
