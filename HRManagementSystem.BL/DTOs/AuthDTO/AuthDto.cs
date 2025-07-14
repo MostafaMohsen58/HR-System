@@ -15,6 +15,7 @@ namespace HRManagementSystem.BL.DTOs.AuthDTO
         public string Token { get; set; }
         public DateTime ExpiresOn { get; set; }
         public string FullName { get; set; }
+        public string UserId { get; set; }
     }
 
 }
