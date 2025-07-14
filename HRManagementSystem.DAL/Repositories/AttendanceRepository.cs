@@ -55,5 +55,24 @@ namespace HRManagementSystem.DAL.Repositories
             return ExistingAttendance;
             
         }
+
+        public async Task<double> GetAverageDailyAttendanceForUsersAsync()
+        {
+            var grouped = await (
+                from attendance in _context.Attendance
+                join userRole in _context.UserRoles on attendance.EmployeeId equals userRole.UserId
+                join role in _context.Roles on userRole.RoleId equals role.Id
+                where role.Name == "User"
+                group attendance by attendance.Date into g
+                select g.Count()
+            ).ToListAsync();
+
+            if (!grouped.Any())
+                return 0;
+
+            return grouped.Average();
+        }
+
+
     }
 }
