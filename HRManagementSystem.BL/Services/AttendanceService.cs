@@ -172,7 +172,8 @@ namespace HRManagementSystem.BL.Services
                 var query = _attendanceRepository.GetAllQueryable();
 
                 if (!string.IsNullOrEmpty(searchTerm))
-                    query = query.Where(a => a.Employee.FullName.Contains(searchTerm));
+                    //query = query.Where(a => a.Employee.FullName.Contains(searchTerm));
+                    query = query.Where(a => a.Employee.FullName.ToLower().StartsWith(searchTerm.ToLower()));
 
                 if (startDate.HasValue)
                     query = query.Where(a => a.Date >= startDate.Value);

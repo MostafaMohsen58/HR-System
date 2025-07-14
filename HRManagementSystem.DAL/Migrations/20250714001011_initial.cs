@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HRManagementSystem.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,6 @@ namespace HRManagementSystem.DAL.Migrations
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
-
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
@@ -46,7 +45,7 @@ namespace HRManagementSystem.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Date = table.Column<DateTime>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,8 +58,11 @@ namespace HRManagementSystem.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Page = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IsView = table.Column<bool>(type: "bit", nullable: false),
+                    IsAdd = table.Column<bool>(type: "bit", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    IsEdit = table.Column<bool>(type: "bit", nullable: false),
+                    Page = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,8 +118,8 @@ namespace HRManagementSystem.DAL.Migrations
                     NationalId = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(10)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ContractDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "date", nullable: false),
+                    ContractDate = table.Column<DateTime>(type: "date", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DepartmentId = table.Column<int>(type: "int", nullable: true),
@@ -263,7 +265,7 @@ namespace HRManagementSystem.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Date = table.Column<DateTime>(type: "date", nullable: false),
                     ArrivalTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DepartureTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false)
@@ -287,14 +289,15 @@ namespace HRManagementSystem.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Month = table.Column<int>(type: "int", nullable: false),
                     Year = table.Column<int>(type: "int", nullable: false),
-                    DaysPresent = table.Column<int>(type: "int", nullable: false),
+                    PresentDays = table.Column<int>(type: "int", nullable: false),
                     AbsentDays = table.Column<int>(type: "int", nullable: false),
-                    DeductedDays = table.Column<int>(type: "int", nullable: false),
+                    DeductionInHours = table.Column<int>(type: "int", nullable: false),
                     ExtraHours = table.Column<int>(type: "int", nullable: false),
                     BasicSalary = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     NetSalary = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalAddition = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalDeduction = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsHolidaySalaryCalculated = table.Column<bool>(type: "bit", nullable: false),
                     EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>

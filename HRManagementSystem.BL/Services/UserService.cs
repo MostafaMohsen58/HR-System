@@ -46,6 +46,27 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterEmployeeDto model, string role)
         {
+            //ApplicationUser userInDb = new ApplicationUser()
+            //{
+            //    Email = model.Email,
+            //    UserName = model.Email.Split('@')[0],
+            //    Address = model.Address,
+            //    FullName = model.FullName,
+            //    NationalId = model.NationalId,
+            //    Nationality= model.Nationality,
+            //    Salary= model.Salary,
+            //    Gender= model.Gender,
+            //    DateOfBirth = model.DateOfBirth,
+            //    ContractDate = model.ContractDate,
+            //    StartTime = model.StartTime,
+            //    EndTime = model.EndTime
+            //};
+
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User with this email already exists." });
+            }
             ApplicationUser userInDb = _mapper.Map<ApplicationUser>(model);
 
             IdentityResult identityResult = await _userManager.CreateAsync(userInDb, model.Password);
@@ -230,6 +251,11 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<IdentityResult> CreateUserAsync(UserDto model)
         {
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User with this email already exists." });
+            }
             var user = _mapper.Map<ApplicationUser>(model);
             SetDefaultUserValues(user);
 
