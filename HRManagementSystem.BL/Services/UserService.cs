@@ -108,6 +108,7 @@ namespace HRManagementSystem.BL.Services
                         Permissions = permissions,
                         Token = token,
                         FullName = user.FullName,
+                        UserId=user.Id,
                         Message = string.Empty
                     };
                 }
