@@ -4,6 +4,7 @@ using HRManagementSystem.BL.DTOs.AuthDTO;
 using HRManagementSystem.BL.DTOs.DepartmentDTO;
 using HRManagementSystem.BL.DTOs.OfficialHoliday;
 using HRManagementSystem.BL.DTOs.SEttingDTO;
+using HRManagementSystem.BL.DTOs.UserProfile;
 using HRManagementSystem.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,10 @@ namespace HRManagementSystem.BL.Mapping
             // Add Attendance mappings
             CreateMap<AttendanceDto, Attendance>();
             CreateMap<AttendanceUpdateDto, Attendance>().ReverseMap();
+
+            CreateMap<ApplicationUser, UserProfileDto>()
+               .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender.ToString()))
+               .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department != null ? src.Department.Name : null));
         }
     }
 }
