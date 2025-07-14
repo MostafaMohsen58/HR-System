@@ -1,6 +1,5 @@
 ﻿using HRManagementSystem.BL.DTOs.ChatDTO;
 using HRManagementSystem.BL.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManagementSystem.API.Controllers
