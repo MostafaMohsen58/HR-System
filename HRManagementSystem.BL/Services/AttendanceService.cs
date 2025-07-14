@@ -12,10 +12,13 @@ namespace HRManagementSystem.BL.Services
     {
         private readonly IAttendanceRepository _attendanceRepository;
         private readonly IMapper _mapper;
-        public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper)
+        private readonly IPayRollService _payRollService;
+        public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper
+            ,IPayRollService payRollService)
         {
             _attendanceRepository = attendanceRepository;
             _mapper = mapper;
+            _payRollService = payRollService;
         }
         public async Task<int> AddAttendanceAsync(AttendanceDto attendanceDto)
         {
@@ -31,7 +34,9 @@ namespace HRManagementSystem.BL.Services
             try
             {
                 var attendance = _mapper.Map<Attendance>(attendanceDto);
-                return await _attendanceRepository.AddAsync(attendance);
+                var result = await _attendanceRepository.AddAsync(attendance);
+                await _payRollService.AddPayRollAsync(attendanceDto.Date.Month,attendanceDto.Date.Year,attendance.EmployeeId,attendance.ArrivalTime, attendance.DepartureTime);
+                return result;
             }
             catch (Exception ex)
             {
@@ -41,6 +46,8 @@ namespace HRManagementSystem.BL.Services
 
         public async Task DeleteAttendanceAsync(int id)
         {
+            var existingAttendance = await _attendanceRepository.GetByIdAsync(id);
+            await _payRollService.DeletePayRollAsync(existingAttendance.Date.Month, existingAttendance.Date.Year, existingAttendance.EmployeeId, existingAttendance.ArrivalTime, existingAttendance.DepartureTime);
             if (await _attendanceRepository.DeleteAsync(id) == 0)
                 throw new KeyNotFoundException($"Attendance with Id {id} was not found.");
         }
@@ -143,10 +150,17 @@ namespace HRManagementSystem.BL.Services
             if (isDuplicate)
                 throw new InvalidOperationException("This employee already has an attendance record for the selected date.");
 
+            //get attendence by id
+            var existingAttendance = await GetAttendanceByIdAsync(attendanceUpdateDto.Id);
+
             var updatedAttendance = await _attendanceRepository.UpdateAsync(attendance);
 
             if (updatedAttendance == null)
                 throw new ArgumentNullException(nameof(attendanceUpdateDto));
+
+            
+            // Update payroll 
+            await _payRollService.UpdatePayRoll(existingAttendance.Date.Month,existingAttendance.Date.Year,attendanceUpdateDto.Date.Month, attendanceUpdateDto.Date.Year,attendanceUpdateDto.EmployeeId,existingAttendance.ArrivalTime, existingAttendance.DepartureTime, attendanceUpdateDto.ArrivalTime, attendanceUpdateDto.DepartureTime);
 
             return _mapper.Map<AttendanceUpdateDto>(updatedAttendance);
             
@@ -193,6 +207,12 @@ namespace HRManagementSystem.BL.Services
             if (arrival >= departure)
                 throw new ArgumentException("Check-in Time cannot be after Check-out Time");
         }
+
+        public async Task<double> GetAverageDailyAttendanceForUsersAsync()
+        {
+            return await _attendanceRepository.GetAverageDailyAttendanceForUsersAsync();
+        }
+
 
     }
 }

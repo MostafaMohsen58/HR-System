@@ -16,5 +16,9 @@ namespace HRManagementSystem.DAL.Interfaces
         IQueryable<Attendance> GetAllQueryable();
         Task<Attendance> GetByIdAsync(int id);
         Task<Attendance> UpdateAsync(Attendance attendance);
+        
+        Task<double> GetAverageDailyAttendanceForUsersAsync();
+
+
     }
 }

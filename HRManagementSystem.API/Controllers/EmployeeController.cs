@@ -66,5 +66,53 @@ namespace HRManagementSystem.API.Controllers
             return Ok(employees);
         }
 
+
+        [HttpGet("dashboard/totalEmployees")]
+        public async Task<IActionResult> GetTotalCount()
+        {
+            var totalCount = await _employeeService.GetTotalEmployeesCountAsync();
+            return Ok(new { totalEmployees = totalCount });
+        }
+
+        [HttpGet("dashboard/employeesByDepartment")]
+        public async Task<IActionResult> GetEmployeesByDepartment()
+        {
+            var result = await _employeeService.GetEmployeesByDepartmentAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("dashboard/genderDistribution")]
+        public async Task<IActionResult> GetGenderDistribution()
+        {
+            var result = await _employeeService.GetGenderDistributionAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("dashboard/averageSalary")]
+        public async Task<IActionResult> GetAverageSalary()
+        {
+            var avg = await _employeeService.GetAverageSalaryAsync();
+            return Ok(new { averageSalary = avg });
+        }
+
+        [HttpGet("dashboard/groupByAge")]
+        public async Task<IActionResult> GetEmployeesGroupedByAge()
+        {
+            var result = await _employeeService.GetEmployeesGroupedByAgeAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("dashboard/nationalityDistribution")]
+        public async Task<IActionResult> GetNationalityDistribution()
+        {
+            var result = await _employeeService.GetNationalityDistributionAsync();
+            return Ok(result);
+        }
+     
+
+
+
+
+
     }
 }
