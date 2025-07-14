@@ -1,9 +1,4 @@
 ﻿using HRManagementSystem.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HRManagementSystem.DAL.Interfaces
 {
@@ -17,7 +12,7 @@ namespace HRManagementSystem.DAL.Interfaces
         Task<Attendance> GetByIdAsync(int id);
         Task<Attendance> UpdateAsync(Attendance attendance);
         
-        Task<double> GetAverageDailyAttendanceForUsersAsync();
+        Task<double> GetDailyAttendanceForUsersAsync();
 
 
     }

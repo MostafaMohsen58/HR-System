@@ -2,6 +2,7 @@
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HRManagementSystem.DAL.Repositories
 {
@@ -56,21 +57,19 @@ namespace HRManagementSystem.DAL.Repositories
             
         }
 
-        public async Task<double> GetAverageDailyAttendanceForUsersAsync()
+        public async Task<double> GetDailyAttendanceForUsersAsync()
         {
-            var grouped = await (
+            DateTime today = DateTime.Today;
+
+            var count = await (
                 from attendance in _context.Attendance
                 join userRole in _context.UserRoles on attendance.EmployeeId equals userRole.UserId
                 join role in _context.Roles on userRole.RoleId equals role.Id
-                where role.Name == "User"
-                group attendance by attendance.Date into g
-                select g.Count()
-            ).ToListAsync();
+                where role.Name == "User" && attendance.Date.Date == today
+                select attendance.EmployeeId
+            ).Distinct().CountAsync();
 
-            if (!grouped.Any())
-                return 0;
-
-            return grouped.Average();
+            return count;
         }
 
 
