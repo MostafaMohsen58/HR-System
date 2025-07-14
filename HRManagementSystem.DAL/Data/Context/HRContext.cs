@@ -1,4 +1,5 @@
 ﻿using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.Models.Enums;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,18 @@ namespace HRManagementSystem.DAL.Data.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Setting>().HasData(
+                new Setting
+                {
+                    Id = 1,
+                    Type = SettingType.Hour,
+                    FirstHoliday = WeekDay.Thursday,
+                    SecondHoliday = WeekDay.Friday,
+                    OverTime = 50.00m,
+                    Deduction = 25.00m
+                }
+            );
         }
     }
 }
