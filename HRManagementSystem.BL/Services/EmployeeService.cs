@@ -69,7 +69,8 @@ namespace HRManagementSystem.BL.Services
         public async Task<IEnumerable<ViewEmployeeDto>> GetEmployeesByDepartmentIdAsync(int departmentId)
         {
             var employees = await _employeeRepository.GetEmployeesByDepartmentIdAsync(departmentId);
-            return _mapper.Map<IEnumerable<ViewEmployeeDto>>(employees);
+            var filteredEmployee = await _userService.GetAllOnlyUsersAsync(employees);
+            return filteredEmployee;
         }
 
         public async Task<IEnumerable<ViewEmployeeDto>> GetEmployeesByDepartmentNameAsync(string departmentName)
