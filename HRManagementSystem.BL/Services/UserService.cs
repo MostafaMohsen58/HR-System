@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using HRManagementSystem.BL.DTOs.AuthDTO;
+using HRManagementSystem.BL.DTOs.EmployeeDTO;
 using HRManagementSystem.BL.Helpers;
 using HRManagementSystem.BL.Interfaces;
+using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
 using HRManagementSystem.DAL.Models.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -24,19 +26,22 @@ namespace HRManagementSystem.BL.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<Role> _roleManger;
         private readonly IMapper _mapper;
+        private readonly IEmployeeRepository _employeeRepository;
 
         public UserService(
       UserManager<ApplicationUser> userManager,
       SignInManager<ApplicationUser> signInManager,
       RoleManager<Role> roleManager,
       IPermissionService permissionService,
-      IMapper mapper)
+      IMapper mapper,
+      IEmployeeRepository employeeRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManger = roleManager;
             _permissionService = permissionService;
             _mapper = mapper;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterEmployeeDto model, string role)
@@ -57,6 +62,11 @@ namespace HRManagementSystem.BL.Services
             //    EndTime = model.EndTime
             //};
 
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User with this email already exists." });
+            }
             ApplicationUser userInDb = _mapper.Map<ApplicationUser>(model);
 
             IdentityResult identityResult = await _userManager.CreateAsync(userInDb, model.Password);
@@ -176,32 +186,52 @@ namespace HRManagementSystem.BL.Services
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        public async Task<List<UserViewDto>> GetAllUsersAsync()
-        {
-            var excludedRoles = new[] { "Hr", "User" };
+       public async Task<List<UserViewDto>> GetAllUsersAsync()
+       {
+           var excludedRoles = new[] { "Hr", "User" };
 
-            var users = _userManager.Users.ToList();
-            var userList = new List<UserViewDto>();
+           var users = _userManager.Users.ToList();
+           var userList = new List<UserViewDto>();
+
+           foreach (var user in users)
+           {
+               //Exclude users who have "HR" or "User" role
+               var roles = await _userManager.GetRolesAsync(user);
+
+               if (roles.Any(r => excludedRoles.Contains(r)))
+                   continue;
+               userList.Add(new UserViewDto
+               {
+                   Id = user.Id,
+                   FullName = user.FullName,
+                   UserName = user.UserName,
+                   Email = user.Email,
+                   Roles = roles.ToList()
+               });
+           }
+
+           return userList;
+       }
+        public async Task<List<ViewEmployeeDto>> GetAllOnlyUsersAsync(IEnumerable<ApplicationUser> users)
+        {
+            var targetRole = "User";
+
+            var userList = new List<ViewEmployeeDto>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
 
-                if (roles.Any(r => excludedRoles.Contains(r)))
+                // Include only users who have the "User" role
+                if (!roles.Contains(targetRole))
                     continue;
 
-                userList.Add(new UserViewDto
-                {
-                    Id = user.Id,
-                    FullName = user.FullName,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Roles = roles.ToList()
-                });
+                userList.Add(_mapper.Map<ViewEmployeeDto>(user));
             }
 
             return userList;
         }
+
 
 
         public async Task<UserViewDto?> GetUserByIdAsync(string id)
@@ -222,6 +252,11 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<IdentityResult> CreateUserAsync(UserDto model)
         {
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User with this email already exists." });
+            }
             var user = _mapper.Map<ApplicationUser>(model);
             SetDefaultUserValues(user);
 

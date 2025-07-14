@@ -58,5 +58,10 @@ namespace HRManagementSystem.DAL.Repositories
                 .ThenInclude(e => e.Department)
                 .AsQueryable();
         }
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            return await _context.PayRoll.Where(a => a.Id == id).ExecuteDeleteAsync();
+        }
     }
 }

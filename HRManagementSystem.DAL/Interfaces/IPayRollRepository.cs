@@ -15,6 +15,7 @@ namespace HRManagementSystem.DAL.Interfaces
         Task<PayRoll?> GetByMonthAndYearAsync(int month, int year, string employeeId);
         Task<List<PayRoll>> GetAllAsync();
         IQueryable<PayRoll> GetAllQueryable();
+        Task<int> DeleteAsync(int id);
 
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HRManagementSystem.BL.DTOs.DepartmentDTO;
-using HRManagementSystem.BL.DTOs.EmployeeDTO;
+﻿using HRManagementSystem.BL.DTOs.EmployeeDTO;
 
 namespace HRManagementSystem.BL.Interfaces
 {
@@ -14,8 +8,25 @@ namespace HRManagementSystem.BL.Interfaces
         Task<ViewEmployeeDto> GetEmployeeByIdAsync(string id);
         Task<bool> UpdateEmployeeAsync(UpdateEmployeeDto dto);
         Task<bool> DeleteEmployeeAsync(string id);
-
         Task<IEnumerable<ViewEmployeeDto>> GetEmployeesByDepartmentIdAsync(int departmentId);
+        Task<IEnumerable<ViewEmployeeDto>> GetEmployeesByDepartmentNameAsync(string departmentName);
+
+
+        Task<int> GetTotalEmployeesCountAsync();
+
+        Task<List<EmployeesByDepartmentDto>> GetEmployeesByDepartmentAsync();
+
+        Task<List<GenderDistributionDto>> GetGenderDistributionAsync();
+
+        Task<decimal> GetAverageSalaryAsync();
+
+        Task<List<AgeGroupDto>> GetEmployeesGroupedByAgeAsync();
+
+        Task<IEnumerable<NationalityDistributionDto>> GetNationalityDistributionAsync();
+
+        //Task<decimal> GetAverageDailyAttendanceAsync();
+        
+
 
     }
 }

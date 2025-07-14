@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(HRContext))]
-    [Migration("20250701085656_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250714023738_AddSettingSeed")]
+    partial class AddSettingSeed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,10 +43,10 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ContractDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -146,7 +146,7 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
@@ -189,7 +189,7 @@ namespace HRManagementSystem.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -214,10 +214,7 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<decimal>("BasicSalary")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("DaysPresent")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DeductedDays")
+                    b.Property<int>("DeductionInHours")
                         .HasColumnType("int");
 
                     b.Property<string>("EmployeeId")
@@ -227,11 +224,17 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<int>("ExtraHours")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsHolidaySalaryCalculated")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Month")
                         .HasColumnType("int");
 
                     b.Property<decimal>("NetSalary")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PresentDays")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalAddition")
                         .HasColumnType("decimal(18,2)");
@@ -257,9 +260,17 @@ namespace HRManagementSystem.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsAdd")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEdit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsView")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Page")
                         .IsRequired()
@@ -341,14 +352,24 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<int>("SecondHoliday")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
+                    b.Property<int>("Type")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("Setting");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Deduction = 25.00m,
+                            FirstHoliday = 6,
+                            OverTime = 50.00m,
+                            SecondHoliday = 7,
+                            Type = 1
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -129,36 +129,6 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "b2d5f000-165f-4c97-9eba-0c8779320d47",
-                            AccessFailedCount = 0,
-                            Address = "123 Main St, Cairo",
-                            ConcurrencyStamp = "ConcurrencyStamp",
-                            ContractDate = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartmentId = 2,
-                            Email = "admin@example.com",
-                            EmailConfirmed = false,
-                            EndTime = new DateTime(1, 1, 1, 16, 0, 0, 0, DateTimeKind.Unspecified),
-                            FullName = "Admin User",
-                            Gender = "Male",
-                            LockoutEnabled = true,
-                            NationalId = "29810000000000",
-                            Nationality = "Egyptian",
-                            NormalizedEmail = "ADMIN@EXAMPLE.COM",
-                            NormalizedUserName = "ADMIN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHy6rJ5zC8pPj3JZx5mZ7XhY9W7vV2lKjXhY7W8z5qKt1vY2bN3cXpLkY9wZ4g==",
-                            PhoneNumber = "01012345678",
-                            PhoneNumberConfirmed = false,
-                            Salary = 15000m,
-                            SecurityStamp = "SecurityStamp",
-                            StartTime = new DateTime(1, 1, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
-                            TwoFactorEnabled = false,
-                            UserName = "admin@example.com"
-                        });
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Attendance", b =>
@@ -186,25 +156,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Attendance", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ArrivalTime = new DateTime(1, 1, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(1, 1, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
-                            EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ArrivalTime = new DateTime(1, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 7, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(1, 1, 1, 17, 0, 0, 0, DateTimeKind.Unspecified),
-                            EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
-                        });
+                    b.ToTable("Attendance");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Department", b =>
@@ -222,19 +174,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Department", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "IT"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "HR"
-                        });
+                    b.ToTable("Department");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.OfficialHoliday", b =>
@@ -254,7 +194,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OfficialHoliday", (string)null);
+                    b.ToTable("OfficialHoliday");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.PayRoll", b =>
@@ -271,15 +211,15 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<decimal>("BasicSalary")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("DeductionInHours")
-                        .HasColumnType("int");
+                    b.Property<double>("DeductionInHours")
+                        .HasColumnType("float");
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ExtraHours")
-                        .HasColumnType("int");
+                    b.Property<double>("ExtraHours")
+                        .HasColumnType("float");
 
                     b.Property<bool>("IsHolidaySalaryCalculated")
                         .HasColumnType("bit");
@@ -306,7 +246,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("PayRoll", (string)null);
+                    b.ToTable("PayRoll");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Permission", b =>
@@ -335,7 +275,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Role", b =>
@@ -386,7 +326,7 @@ namespace HRManagementSystem.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Setting", b =>
@@ -409,14 +349,24 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<int>("SecondHoliday")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
+                    b.Property<int>("Type")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Setting", (string)null);
+                    b.ToTable("Setting");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Deduction = 25.00m,
+                            FirstHoliday = 6,
+                            OverTime = 50.00m,
+                            SecondHoliday = 7,
+                            Type = 1
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

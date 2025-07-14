@@ -1,10 +1,8 @@
-using System;
-using System.Text;
-using System.Text.Json.Serialization;
 using Hangfire;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.BL.Mapping;
 using HRManagementSystem.BL.Services;
+using HRManagementSystem.DAL.Data;
 using HRManagementSystem.DAL.Data.Context;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
@@ -12,6 +10,9 @@ using HRManagementSystem.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
+using System.Text.Json.Serialization;
 
 
 namespace HRManagementSystem.API
@@ -85,7 +86,8 @@ namespace HRManagementSystem.API
             builder.Services.AddScoped<IPermissionService, PermissionService>();
             builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 
-
+            builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+            builder.Services.AddScoped<ISettingService, SettingService>();
 
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
@@ -95,6 +97,8 @@ namespace HRManagementSystem.API
 
             builder.Services.AddScoped<IPayRollRepository, PayRollRepository>();
             builder.Services.AddScoped<IPayRollService, PayRollService>();
+
+            builder.Services.AddScoped<IChatbotService, ChatbotService>();
 
             builder.Services.AddHangfire(configuration =>
             {
@@ -140,6 +144,12 @@ namespace HRManagementSystem.API
             app.MapControllers();
 
             app.Run();
+            
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var services = scope.ServiceProvider;
+            //    await DbSeeder.SeedAllAsync(services);
+            //}
         }
     }
 }

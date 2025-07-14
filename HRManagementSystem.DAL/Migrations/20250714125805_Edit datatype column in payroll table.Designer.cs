@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(HRContext))]
-    [Migration("20250701125730_SeedingData")]
-    partial class SeedingData
+    [Migration("20250714125805_Edit datatype column in payroll table")]
+    partial class Editdatatypecolumninpayrolltable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,10 +43,10 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ContractDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -146,7 +146,7 @@ namespace HRManagementSystem.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
@@ -160,24 +160,6 @@ namespace HRManagementSystem.DAL.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("Attendance");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ArrivalTime = new DateTime(2025, 7, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(2025, 7, 1, 16, 30, 0, 0, DateTimeKind.Unspecified),
-                            EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ArrivalTime = new DateTime(2025, 7, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 7, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartureTime = new DateTime(2025, 7, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
-                            EmployeeId = "b2d5f000-165f-4c97-9eba-0c8779320d47"
-                        });
                 });
 
             modelBuilder.Entity("HRManagementSystem.DAL.Models.Department", b =>
@@ -207,7 +189,7 @@ namespace HRManagementSystem.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -232,24 +214,27 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<decimal>("BasicSalary")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("DaysPresent")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DeductedDays")
-                        .HasColumnType("int");
+                    b.Property<double>("DeductionInHours")
+                        .HasColumnType("float");
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ExtraHours")
-                        .HasColumnType("int");
+                    b.Property<double>("ExtraHours")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsHolidaySalaryCalculated")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Month")
                         .HasColumnType("int");
 
                     b.Property<decimal>("NetSalary")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PresentDays")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalAddition")
                         .HasColumnType("decimal(18,2)");
@@ -275,9 +260,17 @@ namespace HRManagementSystem.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsAdd")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEdit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsView")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Page")
                         .IsRequired()
@@ -359,14 +352,24 @@ namespace HRManagementSystem.DAL.Migrations
                     b.Property<int>("SecondHoliday")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
+                    b.Property<int>("Type")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("Setting");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Deduction = 25.00m,
+                            FirstHoliday = 6,
+                            OverTime = 50.00m,
+                            SecondHoliday = 7,
+                            Type = 1
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
