@@ -195,9 +195,7 @@ namespace HRManagementSystem.BL.Services
 
             foreach (var user in users)
             {
-                // Exclude users who have "HR" or "User" role
-                if (roles.Any(r => excludedRoles.Contains(r)))
-                    continue;
+                //Exclude users who have "HR" or "User" role
                 var roles = await _userManager.GetRolesAsync(user);
 
                 if (roles.Any(r => excludedRoles.Contains(r)))
