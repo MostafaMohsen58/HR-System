@@ -26,12 +26,10 @@ namespace HRManagementSystem.DAL.Models
         public int AbsentDays { get; set; }
 
         [Required]
-        [Range(0, int.MaxValue)]
-        public int DeductionInHours { get; set; } // don't forget to add migration
+        public double DeductionInHours { get; set; } 
 
         [Required]
-        [Range(0, int.MaxValue)]
-        public int ExtraHours { get; set; }
+        public double ExtraHours { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
