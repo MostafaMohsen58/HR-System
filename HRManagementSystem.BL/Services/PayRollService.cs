@@ -5,6 +5,7 @@ using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.BL.Utilities;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.Models.Enums;
 using HRManagementSystem.DAL.Repositories;
 using System;
 using System.Collections.Generic;
@@ -20,15 +21,18 @@ namespace HRManagementSystem.BL.Services
         private readonly IPayRollRepository _payRollRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IOfficialHolidayRepository _officialHolidayRepository;
+        private readonly ISettingRepository _settingRepository;
         private readonly IMapper _mapper;
         public PayRollService(IPayRollRepository payRollRepository, IEmployeeRepository employeeRepository
             , IOfficialHolidayRepository officialHolidayRepository
-            , IMapper mapper)
+            , IMapper mapper
+            , ISettingRepository settingRepository)
         {
             _payRollRepository = payRollRepository;
             _employeeRepository = employeeRepository;
             _officialHolidayRepository = officialHolidayRepository;
             _mapper = mapper;
+            _settingRepository = settingRepository;
         }
         public async Task<int> AddPayRollAsync(int month, int year, string employeeId, DateTime checkIn, DateTime checkOut)
         {
@@ -43,7 +47,7 @@ namespace HRManagementSystem.BL.Services
             if (existingPayRoll == null)
             {
                 //create a new payroll entry
-                var payRoll = CalculateNetSalary(employee, month, year, checkIn, checkOut,21,1);
+                var payRoll =await CalculateNetSalary(employee, month, year, checkIn, checkOut,21,1);
                 
                 return await _payRollRepository.AddAsync(payRoll);
             }
@@ -56,7 +60,7 @@ namespace HRManagementSystem.BL.Services
 
                 ++existingPayRoll.PresentDays;
                 //update the existing payroll entry
-                var payRoll = CalculateNetSalary(employee, month,year,checkIn,checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+                var payRoll =await CalculateNetSalary(employee, month,year,checkIn,checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
 
                 
                 existingPayRoll.NetSalary += payRoll.NetSalary;
@@ -87,8 +91,8 @@ namespace HRManagementSystem.BL.Services
                 if (oldMonth == month && oldYear == year)
                 {
                     
-                    var oldSalarypayRoll = CalculateNetSalary(employee, oldMonth, oldYear, oldCheckIn, oldCheckOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
-                    var newSalaryPayRoll = CalculateNetSalary(employee, month, year, checkIn, checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+                    var oldSalarypayRoll =await CalculateNetSalary(employee, oldMonth, oldYear, oldCheckIn, oldCheckOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+                    var newSalaryPayRoll =await CalculateNetSalary(employee, month, year, checkIn, checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
 
                     
                     existingPayRoll.NetSalary -= oldSalarypayRoll.NetSalary; // remove the old salary
@@ -110,7 +114,7 @@ namespace HRManagementSystem.BL.Services
                 }
                 else //case of update record in previous month
                 {
-                    var oldSalarypayRoll = CalculateNetSalary(employee, oldMonth, oldYear, oldCheckIn, oldCheckOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+                    var oldSalarypayRoll =await CalculateNetSalary(employee, oldMonth, oldYear, oldCheckIn, oldCheckOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
                     
                     existingPayRoll.AbsentDays++;
                     existingPayRoll.PresentDays--;
@@ -157,7 +161,7 @@ namespace HRManagementSystem.BL.Services
                 return existingPayRoll.Id;
             }
 
-            var payRoll = CalculateNetSalary(employee, month, year, checkIn, checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
+            var payRoll =await CalculateNetSalary(employee, month, year, checkIn, checkOut, existingPayRoll.AbsentDays, existingPayRoll.PresentDays);
 
             
             existingPayRoll.NetSalary -= payRoll.NetSalary;
@@ -220,7 +224,7 @@ namespace HRManagementSystem.BL.Services
         }
 
 
-        private PayRoll CalculateNetSalary(ApplicationUser employee,int month,int year,DateTime checkIn,DateTime checkOut, int absentDays, int presentDays)
+        private async Task<PayRoll> CalculateNetSalary(ApplicationUser employee,int month,int year,DateTime checkIn,DateTime checkOut, int absentDays, int presentDays)
         {
 
             var startTime = employee.StartTime.TimeOfDay;
@@ -256,19 +260,19 @@ namespace HRManagementSystem.BL.Services
                 var addedMinutes = (checkOut.TimeOfDay > endTime) ? (checkOut.TimeOfDay - endTime).TotalMinutes : 0;
 
                 //get type(Hour - Pound) from settings
-                //call repo to get the type and then calculate salary based on it deduction and addition
-                var type = "Hour"; // this should be fetched from settings or configuration
+                var type = await _settingRepository.Get();
+
                 decimal additionalSalary, deductedSalary, total;
-                if (type == "Hour")
+                if (type.Type == SettingType.Hour)
                 {
-                    additionalSalary = (decimal)addedMinutes * (valueOfMinute * 2); // i make additional hour equal 2 hours
-                    deductedSalary = (decimal)deductedMinutes * (valueOfMinute * (decimal)0.5); // i make deducted hour equal 2 hours
-                    total = nativeSalary + additionalSalary - deductedSalary; // total salary after addition and deduction
+                    additionalSalary = (decimal)addedMinutes * (valueOfMinute * type.OverTime); 
+                    deductedSalary = (decimal)deductedMinutes * (valueOfMinute * type.Deduction); 
+                    total = nativeSalary + additionalSalary - deductedSalary; 
                 }
                 else
                 {
-                    additionalSalary = (decimal)addedMinutes * (1000 / 60); // get the value pound from settings i assume 1 hour = 1000 pounds
-                    deductedSalary = (decimal)addedMinutes * (500 / 60); // get the value pound from settings i assume 1 hour = 500 pounds
+                    additionalSalary = (decimal)addedMinutes * (type.OverTime / 60);
+                    deductedSalary = (decimal)deductedMinutes * (type.Deduction / 60); 
                     total = nativeSalary + additionalSalary - deductedSalary; // total salary after addition and deduction
                 }
 
@@ -283,8 +287,8 @@ namespace HRManagementSystem.BL.Services
                     NetSalary = total,
                     TotalAddition = additionalSalary,
                     TotalDeduction = deductedSalary,
-                    DeductionInHours = (int)(deductedMinutes / 60), // assuming deduction is in hours
-                    ExtraHours = (int)(addedMinutes / 60) // assuming extra hours is in hours
+                    DeductionInHours = (deductedMinutes / 60),
+                    ExtraHours = (addedMinutes / 60)
                 };
 
             }
@@ -315,7 +319,7 @@ namespace HRManagementSystem.BL.Services
                     continue;
 
                 // Calculate only holidays
-                var holidayPay = CalculateNetSalary(employee, month, year, DateTime.Today, DateTime.Today, monthHolidays.Count, monthHolidays.Count);
+                var holidayPay =await CalculateNetSalary(employee, month, year, DateTime.Today, DateTime.Today, monthHolidays.Count, monthHolidays.Count);
 
                 payRoll.NetSalary += holidayPay.NetSalary;
                 payRoll.AbsentDays -= monthHolidays.Count;
