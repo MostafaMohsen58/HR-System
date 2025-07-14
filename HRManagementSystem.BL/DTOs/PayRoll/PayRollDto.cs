@@ -16,9 +16,9 @@ namespace HRManagementSystem.BL.DTOs.PayRoll
         public int PresentDays { get; set; }
 
         public int AbsentDays { get; set; }
-        public int ExtraHours { get; set; }
+        public double ExtraHours { get; set; }
 
-        public int DeductionInHours { get; set; }
+        public double DeductionInHours { get; set; }
         public decimal TotalAddition { get; set; }
         public decimal TotalDeduction { get; set; }
         public decimal NetSalary { get; set; }

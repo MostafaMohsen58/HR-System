@@ -185,7 +185,7 @@ namespace HRManagementSystem.BL.Services
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      
+
         public async Task<List<UserViewDto>> GetAllUsersAsync()
         {
             var excludedRoles = new[] { "Hr", "User" };
