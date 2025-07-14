@@ -1,19 +1,18 @@
-﻿
-
-using HRManagementSystem.DAL.Models.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using HRManagementSystem.DAL.Models.Enums;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace HRManagementSystem.DAL.Models
+namespace HRManagementSystem.BL.DTOs.Setting
 {
-    public class Setting
+    public class AddSettingDto
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
-        [StringLength(100)]
-        public SettingType Type { get; set; } = SettingType.Hour;
+        public SettingType Type { get; set; }
 
         [Required]
         [EnumDataType(typeof(WeekDay))]
