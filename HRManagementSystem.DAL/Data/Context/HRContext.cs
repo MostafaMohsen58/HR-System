@@ -28,8 +28,8 @@ namespace HRManagementSystem.DAL.Data.Context
                     Type = SettingType.Hour,
                     FirstHoliday = WeekDay.Thursday,
                     SecondHoliday = WeekDay.Friday,
-                    OverTime = 50.00m,
-                    Deduction = 25.00m
+                    OverTime = 3.00m,
+                    Deduction = 2.00m
                 }
             );
         }

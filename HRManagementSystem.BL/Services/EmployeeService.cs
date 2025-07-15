@@ -145,10 +145,6 @@ namespace HRManagementSystem.BL.Services
                 })
                 .ToList();
         }
-        //public async Task<decimal> GetAverageDailyAttendanceAsync()
-        //{
-        //    return await _employeeRepository.GetAverageDailyAttendanceAsync();
-        //}
 
 
 

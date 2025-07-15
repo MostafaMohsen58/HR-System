@@ -201,8 +201,8 @@ namespace HRManagementSystem.API.Controllers
         {
             try
             {
-                var avg = await _attendanceService.GetAverageDailyAttendanceForUsersAsync();
-                return Ok(new { averageDailyAttendance = avg });
+                var count = await _attendanceService.GetDailyAttendanceForUsersAsync();
+                return Ok(new { DailyAttendance = count });
             }
             catch (Exception ex)
             {
