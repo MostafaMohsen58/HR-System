@@ -253,7 +253,7 @@ namespace HRManagementSystem.BL.Services
             }
             else
             {
-                var workedMinutes = endTime.Subtract(checkIn.TimeOfDay).TotalMinutes;
+                var workedMinutes = endTime.Subtract(startTime).TotalMinutes;
                 var nativeSalary = (decimal)workedMinutes * valueOfMinute; // salary of employee for the worked minutes without any deductions or additions
 
                 var deductedMinutes = (checkIn.TimeOfDay > startTime) ? (checkIn.TimeOfDay - startTime).TotalMinutes : 0;
