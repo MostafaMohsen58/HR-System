@@ -54,7 +54,7 @@ namespace HRManagementSystem.BL.Services
             var foundDept = knownDepartments.FirstOrDefault(d => message.Contains(d!));
 
             // Attendance
-            if (message.Contains("attendance"))
+            if (message.Contains("attendance") || message.Contains("attend"))
             {
                 if (!string.IsNullOrEmpty(foundName))
                 {
