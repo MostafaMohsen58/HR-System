@@ -3,6 +3,7 @@ using HRManagementSystem.BL.DTOs.Setting;
 using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,23 +14,25 @@ namespace HRManagementSystem.BL.Services
 {
     public class SettingService : ISettingService
     {
-        private readonly ISettingRepository _settingRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public SettingService(ISettingRepository settingService, IMapper mapper)
+        public SettingService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _settingRepository = settingService;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<int> AddSettingAsync(AddSettingDto Setting)
         {
             var setting = _mapper.Map<Setting>(Setting);
-            return await _settingRepository.AddAsync(setting);
+            var result= await _unitOfWork.SettingRepository.AddAsync(setting);
+            await _unitOfWork.Save();
+            return result;
         }
 
         public async Task<EditSettingDto> GetSettingAsync()
         {
-            var setting = await _settingRepository.Get();
+            var setting = await _unitOfWork.SettingRepository.Get();
 
             if (setting == null)
                 throw new KeyNotFoundException($"setting not found.");
@@ -40,10 +43,11 @@ namespace HRManagementSystem.BL.Services
         {
             var setting = _mapper.Map<Setting>(Setting);
 
-            var updatedSetting = await _settingRepository.UpdateAsync(setting);
+            var updatedSetting = await _unitOfWork.SettingRepository.UpdateAsync(setting);
 
             if (updatedSetting == null)
                 throw new KeyNotFoundException($" ID  not found.");
+            await _unitOfWork.Save();
 
             return _mapper.Map<EditSettingDto>(updatedSetting);
         }

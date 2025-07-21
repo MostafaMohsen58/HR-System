@@ -14,7 +14,6 @@ namespace HRManagementSystem.DAL.Repositories
         public async Task<int> AddAsync(Attendance attendance)
         {
             await _context.Attendance.AddAsync(attendance);
-            await _context.SaveChangesAsync();
             return attendance.Id;
         }
         public async Task<bool> CheckDuplicate(string employeeId, DateTime date)
@@ -52,7 +51,6 @@ namespace HRManagementSystem.DAL.Repositories
             ExistingAttendance.DepartureTime = attendance.DepartureTime;
             ExistingAttendance.Date = attendance.Date;
 
-            await _context.SaveChangesAsync();
             return ExistingAttendance;
             
         }

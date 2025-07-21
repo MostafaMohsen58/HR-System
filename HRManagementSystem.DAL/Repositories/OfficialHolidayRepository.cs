@@ -22,7 +22,6 @@ namespace HRManagementSystem.DAL.Repositories
         public async Task<int> AddAsync(OfficialHoliday officialHoliday)
         {
             await _context.OfficialHoliday.AddAsync(officialHoliday);
-            await _context.SaveChangesAsync();
             return officialHoliday.Id;
         }
 
@@ -40,7 +39,6 @@ namespace HRManagementSystem.DAL.Repositories
             existingHoliday.Date = officialHoliday.Date;
             existingHoliday.Name = officialHoliday.Name;
 
-            await _context.SaveChangesAsync();
             return existingHoliday;
         }
         
@@ -51,7 +49,6 @@ namespace HRManagementSystem.DAL.Repositories
                 return 0; 
                 
             _context.OfficialHoliday.Remove(officialHoliday);
-            await _context.SaveChangesAsync();
             return officialHoliday.Id;
         }
         

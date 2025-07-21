@@ -15,8 +15,8 @@ namespace HRManagementSystem.DAL.Interfaces
 
         Task<IEnumerable<ApplicationUser>> GetAllAsync();
         Task<ApplicationUser> GetByIdAsync(string id);
-        Task<bool> UpdateAsync(ApplicationUser user);
-        Task<bool> DeleteAsync(ApplicationUser user);
+        string UpdateAsync(ApplicationUser user);
+        string DeleteAsync(ApplicationUser user);
         Task<IEnumerable<ApplicationUser>> GetEmployeesByDepartmentIdAsync(int departmentId);
         Task<IEnumerable<ApplicationUser>> GetEmployeesByDepartmentNameAsync(string departmentName);
 

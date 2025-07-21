@@ -4,21 +4,21 @@ using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.BL.Utilities;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRManagementSystem.BL.Services
 {
     public class AttendanceService : IAttendanceService
     {
-        private readonly IAttendanceRepository _attendanceRepository;
-        private readonly IMapper _mapper;
         private readonly IPayRollService _payRollService;
-        public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper
-            ,IPayRollService payRollService)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        public AttendanceService(IUnitOfWork unitOfWork, IMapper mapper,IPayRollService payRollService)
         {
-            _attendanceRepository = attendanceRepository;
-            _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _payRollService = payRollService;
+            _mapper = mapper;
         }
         public async Task<int> AddAttendanceAsync(AttendanceDto attendanceDto)
         {
@@ -27,14 +27,15 @@ namespace HRManagementSystem.BL.Services
 
             ValidateAttendanceTimes(attendanceDto.ArrivalTime, attendanceDto.DepartureTime);
 
-            bool isDuplicate = await _attendanceRepository.CheckDuplicate(attendanceDto.EmployeeId, attendanceDto.Date);
+            bool isDuplicate = await _unitOfWork.AttendanceRepository.CheckDuplicate(attendanceDto.EmployeeId, attendanceDto.Date);
             if (isDuplicate)
                 throw new InvalidOperationException("This employee already has an attendance record for the selected date.");
 
             try
             {
                 var attendance = _mapper.Map<Attendance>(attendanceDto);
-                var result = await _attendanceRepository.AddAsync(attendance);
+                var result = await _unitOfWork.AttendanceRepository.AddAsync(attendance);
+                await _unitOfWork.Save();
                 await _payRollService.AddPayRollAsync(attendanceDto.Date.Month,attendanceDto.Date.Year,attendance.EmployeeId,attendance.ArrivalTime, attendance.DepartureTime);
                 return result;
             }
@@ -46,9 +47,10 @@ namespace HRManagementSystem.BL.Services
 
         public async Task DeleteAttendanceAsync(int id)
         {
-            var existingAttendance = await _attendanceRepository.GetByIdAsync(id);
+            var existingAttendance = await _unitOfWork.AttendanceRepository.GetByIdAsync(id);
             await _payRollService.DeletePayRollAsync(existingAttendance.Date.Month, existingAttendance.Date.Year, existingAttendance.EmployeeId, existingAttendance.ArrivalTime, existingAttendance.DepartureTime);
-            if (await _attendanceRepository.DeleteAsync(id) == 0)
+
+            if (await _unitOfWork.AttendanceRepository.DeleteAsync(id) == 0)
                 throw new KeyNotFoundException($"Attendance with Id {id} was not found.");
         }
 
@@ -56,7 +58,7 @@ namespace HRManagementSystem.BL.Services
         {
             try
             {
-                var attendances = await _attendanceRepository.GetAllQueryable().ToListAsync();
+                var attendances = await _unitOfWork.AttendanceRepository.GetAllQueryable().ToListAsync();
                 return _mapper.Map<IEnumerable<AttendanceUpdateDto>>(attendances);
             }
             catch (Exception ex)
@@ -74,7 +76,7 @@ namespace HRManagementSystem.BL.Services
         {
             try
             {
-                var attendanceQuery = _attendanceRepository.GetAllQueryable();
+                var attendanceQuery = _unitOfWork.AttendanceRepository.GetAllQueryable();
 
                 if(!string.IsNullOrEmpty(searchTerm))
                 {
@@ -126,7 +128,7 @@ namespace HRManagementSystem.BL.Services
         {
             try
             {
-                var attendance = await _attendanceRepository.GetByIdAsync(id);
+                var attendance = await _unitOfWork.AttendanceRepository.GetByIdAsync(id);
                 if (attendance == null)
                     throw new KeyNotFoundException($"Attendance with Id {id} was not found.");
 
@@ -146,14 +148,15 @@ namespace HRManagementSystem.BL.Services
             var attendance = _mapper.Map<Attendance>(attendanceUpdateDto);
             ValidateAttendanceTimes(attendance.ArrivalTime, attendance.DepartureTime);
 
-            bool isDuplicate = await _attendanceRepository.CheckDuplicate(attendanceUpdateDto.EmployeeId, attendanceUpdateDto.Date, attendanceUpdateDto.Id);
+            bool isDuplicate = await _unitOfWork.AttendanceRepository.CheckDuplicate(attendanceUpdateDto.EmployeeId, attendanceUpdateDto.Date, attendanceUpdateDto.Id);
             if (isDuplicate)
                 throw new InvalidOperationException("This employee already has an attendance record for the selected date.");
 
             //get attendence by id
             var existingAttendance = await GetAttendanceByIdAsync(attendanceUpdateDto.Id);
 
-            var updatedAttendance = await _attendanceRepository.UpdateAsync(attendance);
+            var updatedAttendance = await _unitOfWork.AttendanceRepository.UpdateAsync(attendance);
+            await _unitOfWork.Save();
 
             if (updatedAttendance == null)
                 throw new ArgumentNullException(nameof(attendanceUpdateDto));
@@ -169,7 +172,7 @@ namespace HRManagementSystem.BL.Services
         {
             try
             {
-                var query = _attendanceRepository.GetAllQueryable();
+                var query = _unitOfWork.AttendanceRepository.GetAllQueryable();
 
                 if (!string.IsNullOrEmpty(searchTerm))
                     //query = query.Where(a => a.Employee.FullName.Contains(searchTerm));
@@ -193,13 +196,13 @@ namespace HRManagementSystem.BL.Services
         {
             if(excludeId.HasValue)
             {
-                return await _attendanceRepository.CheckDuplicate(employeeId, date, excludeId.Value);
+                return await _unitOfWork.AttendanceRepository.CheckDuplicate(employeeId, date, excludeId.Value);
             }
-            return await _attendanceRepository.CheckDuplicate(employeeId, date);
+            return await _unitOfWork.AttendanceRepository.CheckDuplicate(employeeId, date);
         }
         public async Task<bool> CheckDuplicate(string employeeId, DateTime date)
         {
-            return await _attendanceRepository.CheckDuplicate(employeeId, date);
+            return await _unitOfWork.AttendanceRepository.CheckDuplicate(employeeId, date);
         }
 
         private void ValidateAttendanceTimes(DateTime arrival, DateTime departure)
@@ -210,7 +213,7 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<double> GetDailyAttendanceForUsersAsync()
         {
-            return await _attendanceRepository.GetDailyAttendanceForUsersAsync();
+            return await _unitOfWork.AttendanceRepository.GetDailyAttendanceForUsersAsync();
         }
 
 

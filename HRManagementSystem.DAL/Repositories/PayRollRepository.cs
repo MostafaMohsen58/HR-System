@@ -19,8 +19,10 @@ namespace HRManagementSystem.DAL.Repositories
         }
         public async Task<int> AddAsync(PayRoll payroll)
         {
-            _context.PayRoll.Add(payroll);
-            return await _context.SaveChangesAsync().ContinueWith(t => payroll.Id);
+            await _context.PayRoll.AddAsync(payroll);
+            //return await _context.SaveChangesAsync().ContinueWith(t => payroll.Id);
+
+            return payroll.Id; 
         }
 
         public async Task<PayRoll?> GetByMonthAndYearAsync(int month, int year, string employeeId)
@@ -44,7 +46,7 @@ namespace HRManagementSystem.DAL.Repositories
             existingPayroll.TotalAddition = payroll.TotalAddition;
             existingPayroll.TotalDeduction = payroll.TotalDeduction;
 
-            return await _context.SaveChangesAsync().ContinueWith(t => existingPayroll);
+            return existingPayroll;
         }
         public async Task<List<PayRoll>> GetAllAsync()
         {
