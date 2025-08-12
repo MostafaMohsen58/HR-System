@@ -102,15 +102,11 @@ dotnet ef database update
 dotnet run
 ```
 
-
 ---
 
 ## Default Roles
 
-
-Admin: Full system access.
-
-HR Manager: Manage employees, attendance, payroll.
+HR Manager: Full system access.
 
 User: View personal data & attendance.
 
@@ -141,4 +137,5 @@ User: View personal data & attendance.
 ---
 
 ## Demo Video
-[![Watch the Demo on Google Drive](https://drive.google.com/uc?export=view&id=10Cex7cojWBHroqAqBI6aQsmj_wix7N5g)](https://drive.google.com/file/d/1r6yEJc8OT0E99t41vRVz_yyeUyZ7leab/view)
+
+[![Watch the video](https://drive.google.com/uc?export=view&id=10Cex7cojWBHroqAqBI6aQsmj_wix7N5g)](https://vimeo.com/1109262465)
