@@ -33,16 +33,16 @@ namespace HRManagementSystem.DAL.Repositories
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task<bool> UpdateAsync(ApplicationUser user)
+        public string UpdateAsync(ApplicationUser user)
         {
             _context.Users.Update(user);
-            return await _context.SaveChangesAsync() > 0;
+            return user.Id;
         }
 
-        public async Task<bool> DeleteAsync(ApplicationUser user)
+        public string DeleteAsync(ApplicationUser user)
         {
             _context.Users.Remove(user);
-            return await _context.SaveChangesAsync() > 0;
+            return user.Id;
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetEmployeesByDepartmentIdAsync(int departmentId)

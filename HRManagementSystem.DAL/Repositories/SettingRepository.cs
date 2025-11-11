@@ -24,7 +24,6 @@ namespace HRManagementSystem.DAL.Repositories
             var s = await _context.Setting.CountAsync();
             if (s > 0) return 0;
             await _context.Setting.AddAsync(setting);
-            await _context.SaveChangesAsync();
             return setting.Id;
         }
 
@@ -45,8 +44,6 @@ namespace HRManagementSystem.DAL.Repositories
             existingsetting.OverTime = setting.OverTime;
             existingsetting.Deduction = setting.Deduction;
 
-
-            await _context.SaveChangesAsync();
             return existingsetting;
         }
     }

@@ -22,7 +22,6 @@ namespace HRManagementSystem.DAL.Repositories
         public async Task<int> AddAsync(Department department)
         {
             await _context.Department.AddAsync(department);
-            await _context.SaveChangesAsync();
             return department.Id; 
         }
 
@@ -33,7 +32,6 @@ namespace HRManagementSystem.DAL.Repositories
                 return 0; 
 
             _context.Department.Remove(department);
-            await _context.SaveChangesAsync();
             return department.Id;
         }
 
@@ -57,7 +55,6 @@ namespace HRManagementSystem.DAL.Repositories
             
             existingDepartment.Name = department.Name;
             
-            await _context.SaveChangesAsync();
             return existingDepartment;
         }
     }

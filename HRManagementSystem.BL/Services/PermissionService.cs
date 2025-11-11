@@ -3,6 +3,7 @@ using HRManagementSystem.BL.Interfaces;
 using HRManagementSystem.DAL.Data.Context;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
+using HRManagementSystem.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRManagementSystem.BL.Services
@@ -10,12 +11,12 @@ namespace HRManagementSystem.BL.Services
     public class PermissionService : IPermissionService
     {
         private readonly HRContext _context;
-        private readonly IPermissionRepository _permissionRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PermissionService(HRContext context, IPermissionRepository permissionRepository)
+        public PermissionService(HRContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
-            _permissionRepository = permissionRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task AssignPermissionsToRole(string roleId, List<PermissionDto> permissionDtos)
@@ -85,7 +86,7 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<List<PermissionDto>> GetAllPermissionsAsync()
         {
-            var permissions = await _permissionRepository.GetAllAsync();
+            var permissions = await _unitOfWork.PermissionRepository.GetAllAsync();
             return permissions.Select(p => new PermissionDto
             {
                 Id = p.Id,

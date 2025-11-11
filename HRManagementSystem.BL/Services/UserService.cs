@@ -26,42 +26,23 @@ namespace HRManagementSystem.BL.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<Role> _roleManger;
         private readonly IMapper _mapper;
-        private readonly IEmployeeRepository _employeeRepository;
 
         public UserService(
-      UserManager<ApplicationUser> userManager,
-      SignInManager<ApplicationUser> signInManager,
-      RoleManager<Role> roleManager,
-      IPermissionService permissionService,
-      IMapper mapper,
-      IEmployeeRepository employeeRepository)
+                UserManager<ApplicationUser> userManager,
+                SignInManager<ApplicationUser> signInManager,
+                RoleManager<Role> roleManager,
+                IPermissionService permissionService,
+                IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManger = roleManager;
             _permissionService = permissionService;
             _mapper = mapper;
-            _employeeRepository = employeeRepository;
         }
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterEmployeeDto model, string role)
         {
-            //ApplicationUser userInDb = new ApplicationUser()
-            //{
-            //    Email = model.Email,
-            //    UserName = model.Email.Split('@')[0],
-            //    Address = model.Address,
-            //    FullName = model.FullName,
-            //    NationalId = model.NationalId,
-            //    Nationality= model.Nationality,
-            //    Salary= model.Salary,
-            //    Gender= model.Gender,
-            //    DateOfBirth = model.DateOfBirth,
-            //    ContractDate = model.ContractDate,
-            //    StartTime = model.StartTime,
-            //    EndTime = model.EndTime
-            //};
-
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
@@ -78,8 +59,6 @@ namespace HRManagementSystem.BL.Services
 
             return identityResult;
         }
-
-
 
         public async Task<AuthDto> LoginUserAsync(LoginDto model)
         {

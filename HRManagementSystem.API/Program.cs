@@ -7,6 +7,7 @@ using HRManagementSystem.DAL.Data.Context;
 using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
 using HRManagementSystem.DAL.Repositories;
+using HRManagementSystem.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -77,26 +78,29 @@ namespace HRManagementSystem.API
                     });
             });
 
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddScoped<IOfficialHolidayRepository, OfficialHolidayRepository>();
+            //builder.Services.AddScoped<IOfficialHolidayRepository, OfficialHolidayRepository>();
             builder.Services.AddScoped<IOfficialHolidayService, OfficialHolidayService>();
 
-            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            //builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddScoped<IPermissionService, PermissionService>();
-            builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+            //builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 
-            builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+            //builder.Services.AddScoped<ISettingRepository, SettingRepository>();
             builder.Services.AddScoped<ISettingService, SettingService>();
 
-            builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            //builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
-            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            //builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-            builder.Services.AddScoped<IPayRollRepository, PayRollRepository>();
+            //builder.Services.AddScoped<IPayRollRepository, PayRollRepository>();
             builder.Services.AddScoped<IPayRollService, PayRollService>();
+
+
 
             builder.Services.AddScoped<IChatbotService, ChatbotService>();
 

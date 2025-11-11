@@ -7,6 +7,7 @@ using HRManagementSystem.DAL.Interfaces;
 using HRManagementSystem.DAL.Models;
 using HRManagementSystem.DAL.Models.Enums;
 using HRManagementSystem.DAL.Repositories;
+using HRManagementSystem.DAL.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,27 +19,18 @@ namespace HRManagementSystem.BL.Services
 {
     public class PayRollService : IPayRollService
     {
-        private readonly IPayRollRepository _payRollRepository;
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IOfficialHolidayRepository _officialHolidayRepository;
-        private readonly ISettingRepository _settingRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public PayRollService(IPayRollRepository payRollRepository, IEmployeeRepository employeeRepository
-            , IOfficialHolidayRepository officialHolidayRepository
-            , IMapper mapper
-            , ISettingRepository settingRepository)
+        public PayRollService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _payRollRepository = payRollRepository;
-            _employeeRepository = employeeRepository;
-            _officialHolidayRepository = officialHolidayRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _settingRepository = settingRepository;
         }
         public async Task<int> AddPayRollAsync(int month, int year, string employeeId, DateTime checkIn, DateTime checkOut)
         {
-            var existingPayRoll = await _payRollRepository.GetByMonthAndYearAsync(month, year, employeeId);
+            var existingPayRoll = await _unitOfWork.payRollRepository.GetByMonthAndYearAsync(month, year, employeeId);
 
-            var employee = await _employeeRepository.GetByIdAsync(employeeId);
+            var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(employeeId);
             if (employee == null)
             {
                 throw new KeyNotFoundException($"Employee with ID {employeeId} not found.");
@@ -49,7 +41,9 @@ namespace HRManagementSystem.BL.Services
                 //create a new payroll entry
                 var payRoll =await CalculateNetSalary(employee, month, year, checkIn, checkOut,21,1);
                 
-                return await _payRollRepository.AddAsync(payRoll);
+                var result= await _unitOfWork.payRollRepository.AddAsync(payRoll);
+                await _unitOfWork.Save();
+                return result;
             }
             else 
             {
@@ -69,7 +63,9 @@ namespace HRManagementSystem.BL.Services
                 existingPayRoll.DeductionInHours += payRoll.DeductionInHours;
                 existingPayRoll.ExtraHours += payRoll.ExtraHours;
 
-                return await _payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+                var result = await _unitOfWork.payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+                await _unitOfWork.Save();
+                return result;
             }
 
         }
@@ -78,12 +74,12 @@ namespace HRManagementSystem.BL.Services
         {
             if(oldCheckIn != checkIn || oldCheckOut != checkOut)
             {
-                var existingPayRoll = await _payRollRepository.GetByMonthAndYearAsync(oldMonth, oldYear, employeeId);
+                var existingPayRoll = await _unitOfWork.payRollRepository.GetByMonthAndYearAsync(oldMonth, oldYear, employeeId);
 
                 if (existingPayRoll == null)
                     throw new KeyNotFoundException($"PayRoll for month {month} and year {year} for employee {employeeId} not found.");
 
-                var employee = await _employeeRepository.GetByIdAsync(employeeId);
+                var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(employeeId);
 
                 if (employee == null)
                     throw new KeyNotFoundException($"Employee with ID {employeeId} not found.");
@@ -110,7 +106,9 @@ namespace HRManagementSystem.BL.Services
                     existingPayRoll.ExtraHours -= oldSalarypayRoll.ExtraHours;
                     existingPayRoll.ExtraHours += newSalaryPayRoll.ExtraHours;
 
-                    return await _payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+                    var result= await _unitOfWork.payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+                    await _unitOfWork.Save();
+                    return result;
                 }
                 else //case of update record in previous month
                 {
@@ -124,9 +122,8 @@ namespace HRManagementSystem.BL.Services
                     existingPayRoll.DeductionInHours -= oldSalarypayRoll.DeductionInHours;
                     existingPayRoll.ExtraHours -= oldSalarypayRoll.ExtraHours;
 
-                   await _payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
-
-
+                    await _unitOfWork.payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+                    await _unitOfWork.Save();
                     //create a new payroll entry for the new month
                     await AddPayRollAsync(month, year, employeeId, checkIn, checkOut).ContinueWith(t => t.Result);
                 }
@@ -136,17 +133,17 @@ namespace HRManagementSystem.BL.Services
 
         public async Task<List<PayRoll>> GetAllPayRollsAsync()
         {
-            return await _payRollRepository.GetAllAsync();
+            return await _unitOfWork.payRollRepository.GetAllAsync();
         }
         public async Task<int> DeletePayRollAsync(int month, int year, string employeeId, DateTime checkIn, DateTime checkOut)
         {
-            var existingPayRoll = await _payRollRepository.GetByMonthAndYearAsync(month, year, employeeId);
+            var existingPayRoll = await _unitOfWork.payRollRepository.GetByMonthAndYearAsync(month, year, employeeId);
             if (existingPayRoll == null)
             {
                 throw new KeyNotFoundException($"PayRoll for month {month} and year {year} for employee {employeeId} not found.");
             }
 
-            var employee = await _employeeRepository.GetByIdAsync(employeeId);
+            var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(employeeId);
             if (employee == null)
             {
                 throw new KeyNotFoundException($"Employee with ID {employeeId} not found.");
@@ -157,7 +154,7 @@ namespace HRManagementSystem.BL.Services
 
             if (existingPayRoll.AbsentDays == 22)
             {
-                await _payRollRepository.DeleteAsync(existingPayRoll.Id);
+                await _unitOfWork.payRollRepository.DeleteAsync(existingPayRoll.Id);
                 return existingPayRoll.Id;
             }
 
@@ -170,7 +167,9 @@ namespace HRManagementSystem.BL.Services
             existingPayRoll.DeductionInHours -= payRoll.DeductionInHours;
             existingPayRoll.ExtraHours -= payRoll.ExtraHours;
 
-            return await _payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+            var result= await _unitOfWork.payRollRepository.UpdateAsync(existingPayRoll).ContinueWith(t => t.Result?.Id ?? 0);
+            await _unitOfWork.Save();
+            return result;
         }
 
 
@@ -183,7 +182,7 @@ namespace HRManagementSystem.BL.Services
         {
             try
             {
-                var payRollQuery = _payRollRepository.GetAllQueryable();
+                var payRollQuery = _unitOfWork.payRollRepository.GetAllQueryable();
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
                     payRollQuery = payRollQuery
@@ -253,14 +252,22 @@ namespace HRManagementSystem.BL.Services
             }
             else
             {
-                var workedMinutes = endTime.Subtract(startTime).TotalMinutes;
+                var workedMinutes = checkOut.TimeOfDay.Subtract(checkIn.TimeOfDay).TotalMinutes;
+                //var nativeSalary = (decimal)workedMinutes * valueOfMinute; // salary of employee for the worked minutes without any deductions or additions
+
+                double deductedMinutes = 0;
+                if (checkIn.TimeOfDay > startTime)
+                    deductedMinutes = (checkIn.TimeOfDay - startTime).TotalMinutes;
+                if(checkOut.TimeOfDay <endTime)
+                    deductedMinutes = (endTime - checkOut.TimeOfDay).TotalMinutes;
+                var addedMinutes = (checkOut.TimeOfDay > endTime) ? (checkOut.TimeOfDay - endTime).TotalMinutes : 0;
+                
+                workedMinutes -= addedMinutes;
+
                 var nativeSalary = (decimal)workedMinutes * valueOfMinute; // salary of employee for the worked minutes without any deductions or additions
 
-                var deductedMinutes = (checkIn.TimeOfDay > startTime) ? (checkIn.TimeOfDay - startTime).TotalMinutes : 0;
-                var addedMinutes = (checkOut.TimeOfDay > endTime) ? (checkOut.TimeOfDay - endTime).TotalMinutes : 0;
-
                 //get type(Hour - Pound) from settings
-                var type = await _settingRepository.Get();
+                var type = await _unitOfWork.SettingRepository.Get();
 
                 decimal additionalSalary, deductedSalary, total;
                 if (type.Type == SettingType.Hour)
@@ -302,8 +309,8 @@ namespace HRManagementSystem.BL.Services
                 return;
             }
 
-            var employees = await _employeeRepository.GetAllAsync();
-            var allHolidays = await _officialHolidayRepository.GetAllAsync();
+            var employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
+            var allHolidays = await _unitOfWork.officialHolidayRepository.GetAllAsync();
             var monthHolidays = allHolidays.Where(h => h.Date.Month == month && h.Date.Year == year).ToList();
 
             if (!monthHolidays.Any())
@@ -311,7 +318,7 @@ namespace HRManagementSystem.BL.Services
 
             foreach (var employee in employees)
             {
-                var payRoll = await _payRollRepository.GetByMonthAndYearAsync(month, year, employee.Id);
+                var payRoll = await _unitOfWork.payRollRepository.GetByMonthAndYearAsync(month, year, employee.Id);
                 if (payRoll == null)
                     continue;
 
@@ -326,7 +333,8 @@ namespace HRManagementSystem.BL.Services
                 payRoll.PresentDays += monthHolidays.Count;
                 payRoll.IsHolidaySalaryCalculated = true;
 
-                await _payRollRepository.UpdateAsync(payRoll);
+                await _unitOfWork.payRollRepository.UpdateAsync(payRoll);
+                await _unitOfWork.Save();
                 Console.WriteLine("service done successfully for employee: " + employee.Id);
             }
         }
